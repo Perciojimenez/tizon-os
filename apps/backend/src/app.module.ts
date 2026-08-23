@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { MesasModule } from './mesas/mesas.module';
 import { ReservasModule } from './reservas/reservas.module';
@@ -24,5 +25,6 @@ import { WebsocketModule } from './websocket/websocket.module';
     SmsModule,
     WebsocketModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
