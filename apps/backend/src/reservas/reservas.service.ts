@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { supabaseAdmin } from '../config/supabase.config';
 import { CodigoUnicoService } from './codigo-unico.service';
+import { SmsService } from '../sms/sms.service';
 
 @Injectable()
 export class ReservasService {
-  constructor(private codigoService: CodigoUnicoService) {}
+  constructor(
+    private codigoService: CodigoUnicoService,
+    private smsService: SmsService,
+  ) {}
 
   async crearReserva(clienteId: string, mesaId: string, fecha: string, horaInicio: string, numComensales: number, creadoPor: string, notasServicio?: string) {
     const codigoUnico = this.codigoService.generar();
@@ -26,6 +30,32 @@ export class ReservasService {
       .single();
 
     if (error) throw new Error(`Error al crear reserva: ${error.message}`);
+
+    // Enviar SMS de confirmación automáticamente
+    try {
+      const { data: cliente } = await supabaseAdmin
+        .from('clientes')
+        .select('nombre, telefono')
+        .eq('id', clienteId)
+        .single();
+
+      if (cliente && cliente.telefono) {
+        await this.smsService.enviarSmsConfirmacion(
+          clienteId,
+          cliente.telefono,
+          cliente.nombre,
+          codigoUnico,
+          fecha,
+          horaInicio,
+          numComensales,
+        );
+        console.log(`📱 SMS de confirmación enviado a ${cliente.nombre} (${cliente.telefono})`);
+      }
+    } catch (smsError) {
+      console.error('⚠️ Error al enviar SMS de confirmación:', smsError);
+      // No bloquear la creación de la reserva si falla el SMS
+    }
+
     return data;
   }
 
