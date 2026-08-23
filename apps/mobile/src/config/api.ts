@@ -1,5 +1,6 @@
 // Configuración de la API del backend
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+export const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL || 'https://tizon-os-production.up.railway.app';
 
 export const apiClient = {
   baseURL: API_BASE_URL,
