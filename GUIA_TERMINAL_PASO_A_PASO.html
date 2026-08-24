@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terminal Paso a Paso - Tizón OS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a2e; color: #eee; }
+
+  .hero {
+    background: linear-gradient(135deg, #c0392b, #8e44ad);
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .hero h1 { font-size: 2.4em; color: white; margin-bottom: 10px; }
+  .hero p { font-size: 1.2em; color: rgba(255,255,255,0.85); }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 30px 20px 60px; }
+
+  /* Tarjeta de paso */
+  .step-card {
+    background: #16213e;
+    border-radius: 20px;
+    margin: 30px 0;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .step-header {
+    display: flex;
+    align-items: center;
+    padding: 20px 25px;
+    gap: 18px;
+  }
+  .step-num {
+    background: #c0392b;
+    color: white;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6em; font-weight: 900;
+    flex-shrink: 0;
+  }
+  .step-title { font-size: 1.5em; font-weight: 700; color: white; }
+  .step-sub { font-size: 0.95em; color: #aaa; margin-top: 3px; }
+  .step-body { padding: 0 25px 25px; }
+
+  /* Instrucción numerada */
+  .instr {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin: 18px 0;
+    background: #0f3460;
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .instr-num {
+    background: #e74c3c;
+    color: white;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 0.9em;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .instr-text { font-size: 1.05em; line-height: 1.5; }
+  .instr-text strong { color: #f39c12; }
+  .instr-text em { color: #2ecc71; font-style: normal; }
+
+  /* Comando a copiar */
+  .cmd-box {
+    background: #0d0d0d;
+    border: 2px solid #2ecc71;
+    border-radius: 12px;
+    margin: 15px 0;
+    overflow: hidden;
+  }
+  .cmd-label {
+    background: #1a4731;
+    color: #2ecc71;
+    padding: 8px 16px;
+    font-size: 0.85em;
+    font-weight: 600;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .copy-btn {
+    background: #2ecc71;
+    color: #000;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { background: #27ae60; }
+  .copy-btn.copied { background: #f39c12; }
+  .cmd-text {
+    padding: 16px;
+    font-family: 'SF Mono', 'Courier New', monospace;
+    font-size: 1.05em;
+    color: #2ecc71;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* Screenshot de terminal */
+  .terminal-mock {
+    background: #1e1e1e;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 15px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .terminal-bar {
+    background: #3a3a3a;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27c93f; }
+  .terminal-title { color: #aaa; font-size: 0.85em; margin-left: 10px; flex: 1; text-align: center; }
+  .terminal-content { padding: 20px; font-family: 'SF Mono', 'Courier New', monospace; font-size: 0.95em; line-height: 1.7; }
+  .t-prompt { color: #2ecc71; }
+  .t-cmd { color: #fff; }
+  .t-out { color: #aaa; }
+  .t-success { color: #2ecc71; }
+  .t-warn { color: #f39c12; }
+  .t-url { color: #3498db; text-decoration: underline; }
+  .t-qr { color: #9b59b6; font-size: 1.1em; letter-spacing: 2px; }
+
+  /* Nota importante */
+  .nota {
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 15px 0;
+  }
+  .nota-warn { background: #332200; border-left: 4px solid #f39c12; }
+  .nota-ok   { background: #0d2b1a; border-left: 4px solid #2ecc71; }
+  .nota-info { background: #0d1f33; border-left: 4px solid #3498db; }
+  .nota-icon { font-size: 1.3em; }
+  .nota-title { font-weight: 700; margin-bottom: 6px; font-size: 1em; }
+  .nota-warn .nota-title { color: #f39c12; }
+  .nota-ok   .nota-title { color: #2ecc71; }
+  .nota-info .nota-title { color: #3498db; }
+
+  /* Separador de sección */
+  .divider { text-align: center; margin: 40px 0 10px; }
+  .divider span {
+    background: #e74c3c;
+    color: white;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  /* Imagen de cómo abrir finder */
+  .img-guide {
+    background: #0f3460;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    text-align: center;
+  }
+  .finder-mockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #2c2c2e;
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin: 10px;
+    cursor: default;
+  }
+  .finder-icon { font-size: 2em; }
+  .finder-text { color: white; font-size: 1em; }
+
+  /* Spotlight */
+  .spotlight-mock {
+    background: rgba(40,40,40,0.95);
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin: 15px auto;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #555;
+  }
+  .spotlight-mock .icon { font-size: 1.4em; }
+  .spotlight-input {
+    color: white;
+    font-size: 1.2em;
+    flex: 1;
+  }
+  .spotlight-cursor { display: inline-block; width: 2px; height: 1.2em; background: white; animation: blink 1s infinite; vertical-align: middle; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* App icon */
+  .app-icon-big {
+    width: 80px; height: 80px;
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    font-size: 2.5em;
+    margin: 10px;
+  }
+  .app-terminal { background: linear-gradient(135deg, #000, #333); }
+  .app-expo { background: linear-gradient(135deg, #1c1c1c, #4a4a4a); border: 2px solid #555; }
+
+  /* QR visual */
+  .qr-box {
+    background: white;
+    color: #000;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    display: inline-block;
+    margin: 10px;
+  }
+  .qr-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px;
+    width: 120px;
+    margin: 0 auto 10px;
+  }
+  .qr-cell { width: 10px; height: 10px; border-radius: 1px; }
+  .qr-dark { background: #000; }
+  .qr-light { background: #fff; border: 1px solid #eee; }
+
+  /* Flecha */
+  .arrow { text-align: center; font-size: 2em; color: #e74c3c; margin: 5px 0; }
+
+  .footer {
+    background: #0f0f1a;
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    margin-top: 40px;
+    border-radius: 20px;
+  }
+  .footer a { color: #3498db; }
+  .big-check { font-size: 5em; display: block; margin: 10px 0; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🖥️ Guía de Terminal</h1>
+  <p>Exactamente qué escribir — paso a paso desde cero</p>
+</div>
+
+<div class="page">
+
+  <!-- AVISO INICIAL -->
+  <div class="nota nota-info" style="margin-top: 20px;">
+    <div class="nota-title">ℹ️ ¿Qué es la Terminal?</div>
+    <p>La Terminal es como un "chat con tu computadora" donde le das instrucciones escribiendo texto. No te preocupes — solo tienes que <strong>copiar y pegar</strong> exactamente lo que te muestro aquí.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 1: ABRIR TERMINAL EN MAC
+  ══════════════════════════════════════ -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Abre la Terminal en tu Mac 💻</div>
+        <div class="step-sub">Solo tienes que buscarla y abrirla</div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="instr">
+        <div class="instr-num">A</div>
+        <div class="instr-text">
+          <strong>Método más fácil — Spotlight:</strong><br>
+          Presiona las teclas <em>⌘ Comando + Barra Espaciadora</em> al mismo tiempo
+        </div>
+      </div>
+
+      <div class="spotlight-mock">
+        <div class="icon">🔍</div>
+        <div class="spotlight-input">Terminal<span class="spotlight-cursor"></span></div>
+      </div>
+
+      <div class="instr">
+        <div class="instr-num">B</div>
+        <div class="instr-text">
+          Escribe <em>Terminal</em> → Presiona <strong>Enter</strong><br>
+          Se abrirá una ventana negra — ¡eso es la Terminal!
+        </div>
+      </div>
+
+      <div class="instr">
+        <div class="instr-num">C</div>
+        <div class="instr-text">
+          <strong>Método alternativo — Finder:</strong><br>
+          Finder → Aplicaciones → Utilidades → Terminal.app
+        </div>
+      </div>
+
+      <div class="img-guide">
+        <div class="finder-mockup">
+          <div class="finder-icon">😊</div>
+          <div class="finder-text">Finder</div>
+        </div>
+        <span style="color: #aaa; font-size: 1.5em; margin: 0 5px;">→</span>
+        <div class="finder-mockup">
+          <div class="finder-icon">📂</div>
+          <div class="finder-text">Aplicaciones</div>
+        </div>
+        <span style="color: #aaa; font-size: 1.5em; margin: 0 5px;">→</span>
+        <div class="finder-mockup">
+          <div class="finder-icon">🔧</div>
+          <div class="finder-text">Utilidades</div>
+        </div>
+        <span style="color: #aaa; font-size: 1.5em; margin: 0 5px;">→</span>
+        <div class="finder-mockup" style="background: #000;">
+          <div class="app-icon-big app-terminal">🖥️</div>
+          <div class="finder-text">Terminal</div>
+        </div>
+      </div>
+
+      <div class="nota nota-ok">
+        <div class="nota-title">✅ ¿Cómo sé que la abrí bien?</div>
+        <p>Verás una ventana oscura con texto blanco que dice algo como <code style="color:#2ecc71">percio@MacBook ~ %</code></p>
+      </div>
+
+      <!-- Como se ve la terminal vacía -->
+      <div class="terminal-mock">
+        <div class="terminal-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <div class="terminal-title">Terminal — zsh</div>
+        </div>
+        <div class="terminal-content">
+          <span class="t-success">Last login: Mon Aug 24 08:00:00</span><br>
+          <span class="t-prompt">percio@MacBook ~ %</span> <span style="display:inline-block;width:10px;height:1em;background:#fff;vertical-align:middle;animation:blink 1s infinite;"></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 2: VERIFICAR NODE.JS
+  ══════════════════════════════════════ -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Verifica que Node.js esté instalado 🔍</div>
+        <div class="step-sub">Node.js es el motor que hace correr la app</div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="instr">
+        <div class="instr-num">1</div>
+        <div class="instr-text">
+          En la Terminal, <strong>copia y pega</strong> este comando y presiona <em>Enter</em>:
+        </div>
+      </div>
+
+      <div class="cmd-box">
+        <div class="cmd-label">
+          <span>📋 COPIA ESTE COMANDO</span>
+          <button class="copy-btn" onclick="copyCmd(this, 'node --version')">Copiar</button>
+        </div>
+        <div class="cmd-text">node --version</div>
+      </div>
+
+      <div class="terminal-mock">
+        <div class="terminal-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <div class="terminal-title">Terminal — verificando Node.js</div>
+        </div>
+        <div class="terminal-content">
+          <span class="t-prompt">percio@MacBook ~ %</span> <span class="t-cmd">node --version</span><br>
+          <span class="t-success">v20.11.0</span>  <span class="t-out">← Si ves esto, ¡Node está instalado! ✅</span>
+        </div>
+      </div>
+
+      <div class="nota nota-warn">
+        <div class="nota-title">⚠️ Si ves un error "command not found"</div>
+        <p>Node.js no está instalado. Ve a <strong><a href="https://nodejs.org/" target="_blank" style="color:#f39c12;">https://nodejs.org/</a></strong>, descarga la versión <strong>LTS</strong> e instálala. Luego reinicia la Terminal y vuelve a probar.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 3: DESCARGAR EL PROYECTO
+  ══════════════════════════════════════ -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Descarga el proyecto Tizón OS ⬇️</div>
+        <div class="step-sub">Solo copia y pega este comando — descarga todo automáticamente</div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="instr">
+        <div class="instr-num">1</div>
+        <div class="instr-text">
+          <strong>Primero</strong>, dile a tu Mac dónde guardar el proyecto. Vamos al Escritorio:
+        </div>
+      </div>
+
+      <div class="cmd-box">
+        <div class="cmd-label">
+          <span>📋 COMANDO 1 — Ir al Escritorio</span>
+          <button class="copy-btn" onclick="copyCmd(this, 'cd ~/Desktop')">Copiar</button>
+        </div>
+        <div class="cmd-text">cd ~/Desktop</div>
+      </div>
+
+      <div class="instr">
+        <div class="instr-num">2</div>
+        <div class="instr-text">
+          <strong>Luego</strong>, descarga el proyecto con este comando (tarda 10-30 segundos):
+        </div>
+      </div>
+
+      <div class="cmd-box">
+        <div class="cmd-label">
+          <span>📋 COMANDO 2 — Descargar proyecto</span>
+          <button class="copy-btn" onclick="copyCmd(this, 'git clone https://github.com/Perciojimenez/tizon-os.git')">Copiar</button>
+        </div>
+        <div class="cmd-text">git clone https://github.com/Perciojimenez/tizon-os.git</div>
+      </div>
+
+      <div class="terminal-mock">
+        <div class="terminal-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <div class="terminal-title">Terminal — descargando proyecto</div>
+        </div>
+        <div class="terminal-content">
+          <span class="t-prompt">percio@MacBook ~ %</span> <span class="t-cmd">cd ~/Desktop</span><br>
+          <span class="t-prompt">percio@MacBook Desktop %</span> <span class="t-cmd">git clone https://github.com/Perciojimenez/tizon-os.git</span><br>
+          <span class="t-out">Cloning into 'tizon-os'...</span><br>
+          <span class="t-out">remote: Enumerating objects: 312, done.</span><br>
+          <span class="t-out">remote: Counting objects: 100% (312/312), done.</span><br>
+          <span class="t-out">Receiving objects: 100% (312/312), 2.40 MiB, done.</span><br>
+          <span class="t-success">✅ ¡Descarga completa! Ya tienes la carpeta "tizon-os" en tu Escritorio</span>
+        </div>
+      </div>
+
+      <div class="nota nota-ok">
+        <div class="nota-title">✅ ¿Cómo sé que funcionó?</div>
+        <p>Verás una carpeta llamada <strong>"tizon-os"</strong> en tu Escritorio del Mac.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 4: ENTRAR A LA CARPETA MOBILE
+  ══════════════════════════════════════ -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Entra a la carpeta de la app 📂</div>
+        <div class="step-sub">La app móvil está dentro de la carpeta que descargaste</div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="instr">
+        <div class="instr-num">1</div>
+        <div class="instr-text">
+          Entra a la carpeta de la app móvil con este comando:
+        </div>
+      </div>
+
+      <div class="cmd-box">
+        <div class="cmd-label">
+          <span>📋 COMANDO — Entrar a la carpeta</span>
+          <button class="copy-btn" onclick="copyCmd(this, 'cd tizon-os/apps/mobile')">Copiar</button>
+        </div>
+        <div class="cmd-text">cd tizon-os/apps/mobile</div>
+      </div>
+
+      <div class="instr">
+        <div class="instr-num">2</div>
+        <div class="instr-text">
+          Luego instala los componentes necesarios (tarda 1-2 minutos, solo la <strong>primera vez</strong>):
+        </div>
+      </div>
+
+      <div class="cmd-box">
+        <div class="cmd-label">
+          <span>📋 COMANDO — Instalar componentes</span>
+          <button class="copy-btn" onclick="copyCmd(this, 'npm install')">Copiar</button>
+        </div>
+        <div class="cmd-text">npm install</div>
+      </div>
+
+      <div class="terminal-mock">
+        <div class="terminal-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <div class="terminal-title">Terminal — instalando componentes</div>
+        </div>
+        <div class="terminal-content">
+          <span class="t-prompt">percio@MacBook Desktop %</span> <span class="t-cmd">cd tizon-os/apps/mobile</span><br>
+          <span class="t-prompt">percio@MacBook mobile %</span> <span class="t-cmd">npm install</span><br>
+          <span class="t-out">npm warn deprecated node@0.0.0: ...</span><br>
+          <span class="t-out">added 1247 packages in 45s</span><br><br>
+          <span class="t-success">✅ ¡Instalación completa! (los "warn" en amarillo son normales, no son errores)</span>
+        </div>
+      </div>
+
+      <div class="nota nota-info">
+        <div class="nota-title">💡 Los mensajes en amarillo (warn) son normales</div>
+        <p>No te preocupes si ves muchos mensajes. Lo único importante es que termine y no muestre <strong style="color:#e74c3c;">ERROR</strong> en rojo.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 5: INICIAR EL SERVIDOR
+  ══════════════════════════════════════ -->
+  <div class="step-card" style="border: 2px solid #e74c3c;">
+    <div class="step-header" style="background: linear-gradient(135deg, #c0392b22, #8e44ad22);">
+      <div class="step-num" style="background: linear-gradient(135deg, #c0392b, #8e44ad); font-size: 1.4em;">🚀</div>
+      <div>
+        <div class="step-title">¡Inicia la App! 🎉</div>
+        <div class="step-sub">Este es el comando más importante — solo hazlo una vez</div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="instr">
+        <div class="instr-num">1</div>
+        <div class="instr-text">
+          Escribe este comando y presiona <em>Enter</em>:
+        </div>
+      </div>
+
+      <div class="cmd-box" style="border-color: #e74c3c;">
+        <div class="cmd-label" style="background: #3d0000; color: #e74c3c;">
+          <span>🚀 COMANDO PRINCIPAL</span>
+          <button class="copy-btn" onclick="copyCmd(this, 'npm start')">Copiar</button>
+        </div>
+        <div class="cmd-text" style="color: #e74c3c; font-size: 1.3em;">npm start</div>
+      </div>
+
+      <div class="instr">
+        <div class="instr-num">2</div>
+        <div class="instr-text">
+          Espera unos segundos... Verás que aparece un <strong>código QR</strong> en la Terminal:
+        </div>
+      </div>
+
+      <div class="terminal-mock">
+        <div class="terminal-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <div class="terminal-title">Terminal — Expo running ✅</div>
+        </div>
+        <div class="terminal-content">
+          <span class="t-prompt">percio@MacBook mobile %</span> <span class="t-cmd">npm start</span><br><br>
+          <span class="t-out">Starting Metro Bundler</span><br>
+          <span class="t-success">› Metro waiting on exp://192.168.1.100:8081</span><br><br>
+          <span class="t-qr">█▀▀▀▀▀█ ▄█ ▀ █ █ █▀▀▀▀▀█</span><br>
+          <span class="t-qr">█ ███ █ ▄▄█▀▀▄▀▀▄█ ███ █</span><br>
+          <span class="t-qr">█ ▀▀▀ █ █▀▄▄▄ █▀▀ █ ▀▀▀ █</span><br>
+          <span class="t-qr">▀▀▀▀▀▀▀ ▀▄▀▄▀ █▄▀ ▀▀▀▀▀▀▀</span><br>
+          <span class="t-qr">█▀▀▄ ▄▀ ▀▄█▄▄▀▄█▄█▀▀▄ ▀▄▀</span><br>
+          <span class="t-qr">▄▀▀▀▄█▀█▄█▄▄▀▄ ▀ ▀▄▀▄█▀▀█</span><br>
+          <span class="t-qr">▀▀▀▀▀▀▀ █▄█ ▀▄ ▀ █▄█▀▄▀▄█</span><br><br>
+          <span class="t-success">› Scan the QR code above with Expo Go (Android) or the Camera app (iOS)</span><br><br>
+          <span class="t-out">› Press a │ open Android</span><br>
+          <span class="t-out">› Press i │ open iOS simulator</span><br>
+          <span class="t-warn">› Press w │ open web</span>
+        </div>
+      </div>
+
+      <div class="nota nota-warn">
+        <div class="nota-title">⚠️ MUY IMPORTANTE — No cierres esta ventana</div>
+        <p>La Terminal debe quedar <strong>abierta</strong> mientras usas la app en tu iPhone. Si la cierras, la app dejará de funcionar.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PASO 6: ESCANEAR QR
+  ══════════════════════════════════════ -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">6</div>
+      <div>
+        <div class="step-title">Escanea el QR con tu iPhone 📱</div>
+        <div class="step-sub">Abre la Cámara de iOS — no Expo Go todavía</div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+
+        <div style="background: #0f3460; border-radius: 12px; padding: 20px; text-align: center;">
+          <div style="font-size: 3em; margin-bottom: 10px;">📷</div>
+          <div style="font-size: 1.1em; font-weight: 700; color: white; margin-bottom: 8px;">Paso 1</div>
+          <p>Abre la app <strong style="color:#f39c12;">Cámara</strong> de tu iPhone<br><em style="color:#aaa; font-size:0.85em;">(la app nativa, no Expo Go)</em></p>
+        </div>
+
+        <div style="background: #0f3460; border-radius: 12px; padding: 20px; text-align: center;">
+          <div style="font-size: 3em; margin-bottom: 10px;">🎯</div>
+          <div style="font-size: 1.1em; font-weight: 700; color: white; margin-bottom: 8px;">Paso 2</div>
+          <p>Apunta al <strong style="color:#f39c12;">código QR</strong> que ves en la Terminal de tu Mac</p>
+        </div>
+
+        <div style="background: #0f3460; border-radius: 12px; padding: 20px; text-align: center;">
+          <div style="font-size: 3em; margin-bottom: 10px;">🔔</div>
+          <div style="font-size: 1.1em; font-weight: 700; color: white; margin-bottom: 8px;">Paso 3</div>
+          <p>Aparece un mensaje arriba: <strong style="color:#2ecc71;">"Abrir en Expo Go"</strong></p>
+        </div>
+
+        <div style="background: #1a4731; border-radius: 12px; padding: 20px; text-align: center; border: 2px solid #2ecc71;">
+          <div style="font-size: 3em; margin-bottom: 10px;">👆</div>
+          <div style="font-size: 1.1em; font-weight: 700; color: white; margin-bottom: 8px;">Paso 4</div>
+          <p><strong style="color:#2ecc71;">Toca ese mensaje</strong><br>La app se abrirá en Expo Go</p>
+        </div>
+
+      </div>
+
+      <div class="nota nota-info">
+        <div class="nota-title">⏳ ¿Cuánto tarda en cargar?</div>
+        <p><strong>Primera vez:</strong> 30-60 segundos (compila todo el proyecto)<br>
+        <strong>Siguientes veces:</strong> 5-10 segundos (ya tiene caché)</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       ÉXITO
+  ══════════════════════════════════════ -->
+  <div style="background: linear-gradient(135deg, #0d2b1a, #1a4731); border: 2px solid #2ecc71; border-radius: 20px; padding: 30px; text-align: center; margin: 30px 0;">
+    <span class="big-check">🎉</span>
+    <h2 style="color: #2ecc71; font-size: 2em; margin-bottom: 15px;">¡Listo! La App Está Funcionando</h2>
+    <p style="color: #aaa; font-size: 1.1em; margin-bottom: 20px;">Tizón OS está corriendo en tu iPhone y conectado al backend en producción</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 25px; text-align: left;">
+      <div style="background: #0a1f13; border-radius: 10px; padding: 15px;">
+        <div style="font-size: 1.5em; margin-bottom: 5px;">🪑</div>
+        <strong>Plano de mesas</strong>
+        <p style="color:#aaa; font-size:0.85em; margin-top:5px;">Ver estado en tiempo real</p>
+      </div>
+      <div style="background: #0a1f13; border-radius: 10px; padding: 15px;">
+        <div style="font-size: 1.5em; margin-bottom: 5px;">📅</div>
+        <strong>Crear reservas</strong>
+        <p style="color:#aaa; font-size:0.85em; margin-top:5px;">Envía WhatsApp automático</p>
+      </div>
+      <div style="background: #0a1f13; border-radius: 10px; padding: 15px;">
+        <div style="font-size: 1.5em; margin-bottom: 5px;">👥</div>
+        <strong>Lista de espera</strong>
+        <p style="color:#aaa; font-size:0.85em; margin-top:5px;">Walk-ins con notificación</p>
+      </div>
+      <div style="background: #0a1f13; border-radius: 10px; padding: 15px;">
+        <div style="font-size: 1.5em; margin-bottom: 5px;">⚡</div>
+        <strong>Tiempo real</strong>
+        <p style="color:#aaa; font-size:0.85em; margin-top:5px;">Cambios instantáneos</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PROBLEMAS COMUNES
+  ══════════════════════════════════════ -->
+  <div class="step-card" style="border-left: 4px solid #f39c12;">
+    <div class="step-header">
+      <div class="step-num" style="background: #f39c12;">⚠️</div>
+      <div>
+        <div class="step-title">¿Algo no funciona? Soluciones rápidas</div>
+        <div class="step-sub">Los 3 problemas más comunes y cómo resolverlos</div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="nota nota-warn">
+        <div class="nota-title">❌ "Unable to connect to Metro" en el iPhone</div>
+        <p><strong>Causa:</strong> Tu iPhone y tu Mac no están en la misma red WiFi.<br>
+        <strong>Solución:</strong> Usa el modo túnel — detén el servidor (Ctrl+C) e inicia con:</p>
+        <div class="cmd-box" style="margin-top:10px;">
+          <div class="cmd-label"><span>📋 Modo Túnel</span>
+          <button class="copy-btn" onclick="copyCmd(this, 'npx expo start --tunnel')">Copiar</button></div>
+          <div class="cmd-text">npx expo start --tunnel</div>
+        </div>
+        <p style="margin-top:8px;">Este modo funciona aunque no estén en la misma WiFi. Tarda un poco más en arrancar.</p>
+      </div>
+
+      <div class="nota nota-warn" style="margin-top:20px;">
+        <div class="nota-title">❌ "npm: command not found"</div>
+        <p><strong>Causa:</strong> Node.js no está instalado.<br>
+        <strong>Solución:</strong> Ve a <a href="https://nodejs.org" target="_blank" style="color:#f39c12">https://nodejs.org</a> → descarga <strong>LTS</strong> → instala → reinicia Terminal → vuelve al Paso 2.</p>
+      </div>
+
+      <div class="nota nota-warn" style="margin-top:20px;">
+        <div class="nota-title">❌ Pantalla en blanco o app no carga</div>
+        <p><strong>Solución:</strong> En la Terminal, presiona la tecla <strong style="color:#f39c12;">r</strong> para recargar la app.<br>
+        También puedes agitar el iPhone físicamente → aparece el menú → toca "Reload".</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RESUMEN RÁPIDO -->
+  <div style="background: #16213e; border-radius: 20px; padding: 25px; margin-top: 30px;">
+    <h3 style="color: #3498db; margin-bottom: 20px; font-size: 1.3em;">📋 Resumen de Comandos (Para Cuando lo Repitas)</h3>
+    <div class="cmd-box">
+      <div class="cmd-label"><span>Los 4 comandos en orden</span>
+      <button class="copy-btn" onclick="copyCmd(this, 'cd ~/Desktop\ncd tizon-os/apps/mobile\nnpm install\nnpm start')">Copiar todo</button></div>
+      <div class="cmd-text"><span class="t-out"># 1. Ir al escritorio</span>
+cd ~/Desktop
+
+<span class="t-out"># 2. Entrar a la carpeta (si ya tienes el proyecto)</span>
+cd tizon-os/apps/mobile
+
+<span class="t-out"># 3. Instalar dependencias (solo la primera vez)</span>
+npm install
+
+<span class="t-out"># 4. ¡Iniciar la app!</span>
+npm start</div>
+    </div>
+    <p style="color:#aaa; margin-top:15px; font-size:0.9em;">💡 <strong>La próxima vez</strong> que quieras abrir la app, solo necesitas los pasos 2 y 4 (ya no necesitas instalar de nuevo).</p>
+  </div>
+
+  <div class="footer">
+    <p><strong style="color:white;">Tizón OS</strong> — Sistema de Gestión para Tizón Meats 🥩</p>
+    <p style="margin-top:10px;">Backend: <a href="https://tizon-os-production.up.railway.app" target="_blank">tizon-os-production.up.railway.app</a></p>
+    <p>GitHub: <a href="https://github.com/Perciojimenez/tizon-os" target="_blank">github.com/Perciojimenez/tizon-os</a></p>
+  </div>
+
+</div>
+
+<script>
+function copyCmd(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    // fallback for non-https
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
