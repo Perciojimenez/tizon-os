@@ -13,6 +13,7 @@
     "start": "cd apps/backend && npm run start:prod"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.112.3"
+    "@supabase/supabase-js": "^2.112.3",
+    "twilio": "^6.1.0"
   }
 }
