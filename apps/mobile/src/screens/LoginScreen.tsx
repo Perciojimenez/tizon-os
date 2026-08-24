@@ -17,6 +17,7 @@ export const LoginScreen = ({ navigation }: any) => {
 
     setLoading(true);
     try {
+      // 1. Autenticar con Supabase Auth
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -24,16 +25,35 @@ export const LoginScreen = ({ navigation }: any) => {
 
       if (error) throw error;
 
-      if (data.session?.access_token) {
-        setToken(data.session.access_token);
-        // TODO: obtener rol desde tabla staff
-        setUser({
-          id: data.user!.id,
-          email: data.user!.email || '',
-          rol: 'hostess',
-        });
-        navigation?.replace('Home');
+      if (!data.session?.access_token) {
+        throw new Error('No se obtuvo token de sesión');
       }
+
+      // 2. Obtener datos del staff desde la tabla
+      const { data: staffData, error: staffError } = await supabase
+        .from('staff')
+        .select('id, nombre, email, rol')
+        .eq('email', data.user!.email)
+        .single();
+
+      if (staffError) {
+        throw new Error('Usuario no encontrado en el sistema. Contacta al administrador.');
+      }
+
+      if (!staffData) {
+        throw new Error('No se encontraron datos del usuario');
+      }
+
+      // 3. Guardar token y usuario en el store
+      setToken(data.session.access_token);
+      setUser({
+        id: staffData.id,
+        email: staffData.email,
+        rol: staffData.rol,
+        nombre: staffData.nombre,
+      });
+
+      navigation?.replace('Home');
     } catch (err) {
       Alert.alert('Error de login', err instanceof Error ? err.message : 'Error desconocido');
     } finally {

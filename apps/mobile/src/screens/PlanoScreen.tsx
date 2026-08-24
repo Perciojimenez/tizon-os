@@ -26,7 +26,7 @@ export const PlanoScreen = ({ navigation }: any) => {
         capacidad={pacingEstado?.capacidad}
       />
 
-      <Text style={styles.sectionTitle} style={{ marginTop: 20 }}>Plano de Mesas</Text>
+      <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Plano de Mesas</Text>
       
       <View style={styles.mesasGrid}>
         {mesas.map((mesa) => (

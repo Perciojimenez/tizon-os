@@ -1,3 +1,5 @@
+import { useAuthStore } from '../store/authStore';
+
 // Configuración de la API del backend
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL || 'https://tizon-os-production.up.railway.app';
@@ -25,7 +27,8 @@ export const apiClient = {
   },
 
   async getToken() {
-    // Obtener token del storage o sesión de Supabase
-    return null; // TODO: integrar con auth store
+    // Obtener token del authStore
+    const token = useAuthStore.getState().token;
+    return token;
   },
 };
