@@ -1,316 +1,205 @@
-# 📱 Guía de Prueba - Tizón OS Mobile App
+# 📱 Guía de Prueba - App Móvil Tizón OS
 
-**Fecha**: 2026-08-24  
-**Versión**: Tizón OS v2.0 Mobile (React Native + Expo)
+## ✅ Estado de Configuración
 
----
+La app móvil está **lista para probar** con las siguientes configuraciones completadas:
 
-## 🎯 Estado Actual
-
-### ✅ Componentes Listos
-- ✅ **Servidor Expo**: Corriendo en puerto 8081
-- ✅ **Backend API**: Railway (https://tizon-os-production.up.railway.app)
-- ✅ **Base de datos**: Supabase (con datos seed)
-- ✅ **SMS + WhatsApp**: Sistema de doble canal operacional
-- ✅ **Código móvil**: 
-  - LoginScreen
-  - PlanoScreen (floor plan)
-  - ReservasScreen
-  - CRMScreen
-  - ListaEsperaScreen
-  - WebSocket real-time
-
-### ⚠️ Configuración Pendiente
-- ⚠️ **Usuarios de autenticación**: Necesitan crearse en Supabase Auth
+- ✅ Backend conectado: `https://tizon-os-production.up.railway.app`
+- ✅ WebSocket configurado: namespace `/sala` para actualizaciones en tiempo real
+- ✅ Variables de entorno: `EXPO_PUBLIC_API_URL` configurada
+- ✅ Dependencias instaladas: Expo 49, React Native 0.72.6, React Navigation, Socket.io
 
 ---
 
-## 📲 Opción 1: Probar en Tu Dispositivo Móvil (Recomendado)
+## 🚀 Cómo Probar la App en tu Teléfono
 
-### Paso 1: Instalar Expo Go
-1. **iOS**: Descargar [Expo Go](https://apps.apple.com/app/expo-go/id982107779) de la App Store
-2. **Android**: Descargar [Expo Go](https://play.google.com/store/apps/details?id=host.exp.exponent) de Google Play
+### Paso 1: Instalar Expo Go en tu teléfono
 
-### Paso 2: Conectar a la App
-Tienes **2 formas** de conectarte:
+**Android:**
+- Abre Google Play Store
+- Busca "Expo Go"
+- Instala la app
 
-#### Método A: URL Directa
-1. Abre **Expo Go** en tu celular
-2. Toca **"Enter URL manually"**
-3. Ingresa esta URL:
-   ```
-   exp://c646794c8-8081.na120.preview.abacusai.app
-   ```
-4. Toca **"Connect"**
+**iOS:**
+- Abre App Store
+- Busca "Expo Go"
+- Instala la app
 
-#### Método B: QR Code (si está disponible)
-1. Ve a http://localhost:8081 en el navegador de la VM
-2. Escanea el QR code con:
-   - **iOS**: Cámara nativa → aparecerá notificación de Expo Go
-   - **Android**: App Expo Go → botón "Scan QR Code"
+### Paso 2: Iniciar el servidor de desarrollo
 
-### Paso 3: Esperar Carga
-- La app tomará **1-2 minutos** en cargar la primera vez
-- Verás una pantalla de "Downloading JavaScript bundle"
-- Expo Go mostrará logs en caso de errores
+Desde tu computadora, en la carpeta del proyecto:
 
----
-
-## 🔐 Configuración de Usuarios de Prueba
-
-**IMPORTANTE**: Para poder hacer login, necesitas crear los usuarios en Supabase Auth.
-
-### Usuarios de Staff en Base de Datos (ya creados en seed):
-
-| Nombre | Email | Rol | PIN |
-|--------|-------|-----|-----|
-| Laura Menéndez | laura.menendez@tizonmeats.com | gerencia | 4821 |
-| Sofía Ramírez | sofia.ramirez@tizonmeats.com | hostess | 1930 |
-| Carlos Méndez | carlos.mendez@tizonmeats.com | hostess | 5576 |
-| David Torres | david.torres@tizonmeats.com | mesero | 8291 |
-| Isabel Guzmán | isabel.guzman@tizonmeats.com | mesero | 3304 |
-
-### Crear Usuarios en Supabase Auth (Necesario):
-
-1. **Abre Supabase Dashboard**:
-   - Ve a: https://supabase.com/dashboard/project/gfrfnnlasgepepocjddu
-   - Inicia sesión
-
-2. **Ve a Authentication → Users**:
-   - Clic en el menú lateral: **Authentication**
-   - Clic en **Users**
-
-3. **Agregar Usuario** (ejemplo: Sofía - hostess):
-   - Clic en **"Add user" → "Create new user"**
-   - Email: `sofia.ramirez@tizonmeats.com`
-   - Password: `TizonOS2024!` (o la que prefieras)
-   - Clic en **"Create user"**
-   - **Email Confirmation**: Marca "Auto Confirm User" si está disponible
-
-4. **Repetir** para los otros usuarios que quieras probar
-
-### Credenciales Sugeridas para Prueba:
-
-```
-Email: sofia.ramirez@tizonmeats.com
-Password: TizonOS2024!
-Rol: hostess (acceso completo a reservas, mesas, lista de espera)
-```
-
----
-
-## 🧪 Flujo de Prueba de la App
-
-### 1️⃣ Login
-1. Abre la app → **LoginScreen** (pantalla negra con logo 🍖)
-2. Ingresa:
-   - Email: `sofia.ramirez@tizonmeats.com`
-   - Password: `TizonOS2024!` (o la que configuraste)
-3. Toca **"Iniciar Sesión"**
-4. Deberías ver **navegación inferior** con tabs
-
-### 2️⃣ Plano de Mesas (Floor Plan)
-- **Tab**: 🗺️ Plano
-- **Funcionalidad**:
-  - Ver 20 mesas con estados (libre, ocupada, reservada, por_salir)
-  - Filtrar por zona (Salón Principal, Terraza, Privado)
-  - Ver capacidad de cada mesa
-  - **Tiempo real**: Cambios de estado vía WebSocket
-
-### 3️⃣ Reservas
-- **Tab**: 📅 Reservas
-- **Funcionalidad**:
-  - Ver lista de reservas activas
-  - Crear nueva reserva (botón +)
-  - Ver detalles: cliente, mesa, hora, personas
-  - Estados: pendiente, confirmada, sentada, completada, cancelada
-  - **Envío automático**: SMS/WhatsApp al crear reserva
-
-### 4️⃣ CRM de Clientes
-- **Tab**: 👤 CRM
-- **Funcionalidad**:
-  - Ver 10 clientes seed con datos reales
-  - Información: nombre, teléfono, email, visitas, gasto total
-  - Preferencias: término de carne, alergias, mesa favorita
-  - Etiquetas: VIP, cumpleaños, corporativo
-  - Buscar clientes
-
-### 5️⃣ Lista de Espera
-- **Tab**: ⏱️ Espera
-- **Funcionalidad**:
-  - Ver walk-ins esperando mesa
-  - Agregar nuevos a la lista
-  - Ver tiempo de espera
-  - Asignar mesa cuando esté disponible
-  - **Notificación automática**: SMS/WhatsApp cuando mesa lista
-
----
-
-## 🔄 Funcionalidades en Tiempo Real (WebSocket)
-
-La app se conecta automáticamente al backend vía WebSocket:
-
-### Eventos que la app recibe:
-- ✅ `mesa-actualizada`: Actualiza estado de mesa en el plano
-- ✅ `pacing-estado`: Muestra indicador de ritmo de cocina
-- ✅ `lista-espera-actualizada`: Refresca lista de espera
-
-### Conexión WebSocket:
-```typescript
-URL: wss://tizon-os-production.up.railway.app
-Estado: Conectado automáticamente al abrir la app
-```
-
----
-
-## 🛠️ Solución de Problemas
-
-### ❌ Error: "Unable to connect to Metro bundler"
-- **Causa**: La URL del servidor Expo no es accesible desde tu red
-- **Solución**: Verifica que estés usando `exp://c646794c8-8081.na120.preview.abacusai.app`
-
-### ❌ Error: "Network request failed" en login
-- **Causa**: Backend no accesible o credenciales incorrectas
-- **Soluciones**:
-  1. Verifica que Railway esté activo: https://tizon-os-production.up.railway.app/health
-  2. Verifica que creaste el usuario en Supabase Auth
-  3. Verifica que el email/password sean correctos
-
-### ❌ Error: "Invalid login credentials"
-- **Causa**: Usuario no existe en Supabase Auth
-- **Solución**: Crea el usuario en Supabase Dashboard → Authentication → Users
-
-### ❌ La app se cierra al tocar un tab
-- **Causa**: Posible error en el código de la pantalla
-- **Solución**: Revisa logs en Expo Go → Menu → Ver logs
-
-### ❌ No aparecen datos (mesas, reservas vacías)
-- **Causa**: Backend no está devolviendo datos
-- **Solución**: 
-  1. Verifica que el seed.sql se haya ejecutado en Supabase
-  2. Verifica conexión a API en DevTools
-
----
-
-## 📊 Datos Seed Disponibles
-
-### Mesas (20 totales):
-- **Salón Principal**: 8 mesas (2-8 personas)
-- **Terraza**: 10 mesas (2-6 personas)
-- **Privado**: 2 mesas (10-12 personas)
-
-### Clientes (10 registros):
-- Ricardo Salazar (VIP, corporativo, 24 visitas, $48,250 MXN)
-- Ana Lucía Moreno (VIP, alérgica mariscos, 12 visitas)
-- Jorge Villanueva, María Fernanda Ruiz, etc.
-
-### Reservas (3 activas):
-- Ricardo Salazar → Mesa 19 (Privado) → 2026-08-24 20:00
-- Ana Lucía Moreno → Mesa 12 (Terraza) → 2026-08-24 21:00
-- Andrés Beltrán → Mesa 7 (Salón) → 2026-08-25 19:30
-
-### Lista de Espera (2 walk-ins):
-- Familia García (4 personas) → Esperando 8 min
-- Pareja Martínez (2 personas) → Esperando 3 min
-
----
-
-## 🚀 Opciones Avanzadas
-
-### Probar con Simulador iOS (requiere macOS)
 ```bash
-cd /home/ubuntu/tizon-os/apps/mobile
-npm run ios
+cd /ruta/a/tizon-os/apps/mobile
+npm start
 ```
 
-### Probar con Emulador Android (requiere Android Studio)
-```bash
-cd /home/ubuntu/tizon-os/apps/mobile
-npm run android
-```
+Esto iniciará el servidor de desarrollo de Expo y mostrará un **código QR** en la terminal.
 
-### Probar en Web (navegador)
-```bash
-cd /home/ubuntu/tizon-os/apps/mobile
-npm run web
-```
-Luego abre: http://localhost:8081
+### Paso 3: Escanear el código QR
+
+**Android:**
+- Abre la app **Expo Go**
+- Toca "Scan QR Code"
+- Escanea el código QR de la terminal
+
+**iOS:**
+- Abre la app **Cámara** nativa de iOS
+- Apunta al código QR
+- Toca la notificación que aparece para abrir en Expo Go
+
+### Paso 4: Verificar la conexión
+
+Una vez que la app cargue, verifica:
+- ✅ La app se abre sin errores
+- ✅ Se muestra la pantalla de login/inicio
+- ✅ La conexión WebSocket se establece (mira los logs en la terminal)
 
 ---
 
-## 📱 Arquitectura de la App
+## 🔍 Funcionalidades Disponibles en la App
 
-### Tecnologías:
-- **React Native** 0.72.6
-- **Expo** SDK 49
-- **TypeScript** 5.1
-- **Zustand** (state management)
-- **React Navigation** 6.x (navegación)
-- **Socket.io-client** (WebSocket real-time)
-- **Supabase JS** (auth + DB)
+### 1. **Vista de Mesas (Floor Plan)**
+- Visualización del plano de mesas en tiempo real
+- Estados: libre 🟢, ocupada 🔴, reservada 🟡, por salir ⚪
+- Filtro por zonas: Salón Principal, Terraza, Privado
 
-### Estructura de Carpetas:
-```
-src/
-├── components/       # MesaCard, PacingIndicator
-├── config/          # api.ts, socket.ts, supabase.ts
-├── hooks/           # useClientes, useMesas, useReservas
-├── navigation/      # AppNavigator.tsx
-├── screens/         # Login, Plano, Reservas, CRM, ListaEspera
-├── services/        # api.ts (API client)
-└── store/           # authStore, salaStore (Zustand)
-```
+### 2. **Gestión de Reservas**
+- Crear reserva rápida ("10-Seconds Booking")
+- Ver reservas del día
+- Confirmar/cancelar reservas
+- Marcar reserva como "sentada"
 
-### API Endpoints Usados:
+### 3. **Lista de Espera**
+- Agregar walk-ins
+- Notificar cuando mesa está lista (WhatsApp)
+- Marcar como sentado/cancelado
+
+### 4. **CRM de Clientes**
+- Buscar clientes por nombre/teléfono
+- Ver historial de visitas
+- Términos de carne favoritos
+- Alergias y preferencias
+
+### 5. **Actualizaciones en Tiempo Real**
+- WebSocket conectado al backend
+- Cambios de estado de mesa se reflejan instantáneamente
+- Notificaciones de nuevas reservas
+- Estado de "pacing" (semáforo de cocina)
+
+---
+
+## 🛠️ Endpoints del Backend Disponibles
+
+La app móvil consume los siguientes endpoints:
+
+### Mesas
+- `GET /mesas` - Obtener todas las mesas
+- `GET /mesas/:id` - Obtener mesa específica
+- `PATCH /mesas/:id/estado` - Actualizar estado de mesa
+- `GET /mesas/zona/:zona` - Filtrar por zona
+- `GET /mesas/libres/:capacidad` - Mesas libres con capacidad mínima
+
+### Reservas
+- `GET /reservas` - Obtener reservas (con filtros opcionales)
+- `POST /reservas` - Crear nueva reserva
+- `PATCH /reservas/:id/estado` - Actualizar estado de reserva
+
+### Clientes
+- `GET /clientes` - Buscar clientes (query param: `busqueda`)
+- `GET /clientes/:id` - Obtener cliente específico
+- `POST /clientes` - Crear nuevo cliente
+
+### Lista de Espera
+- `GET /lista-espera` - Obtener lista de espera activa
+- `POST /lista-espera` - Crear nuevo walk-in
+- `PATCH /lista-espera/:id/estado` - Actualizar estado
+
+### WebSocket (namespace `/sala`)
+- Evento: `mesa-actualizada` - Emitido cuando cambia estado de mesa
+- Evento: `reserva-confirmada` - Emitido al confirmar reserva
+- Evento: `pacing-estado` - Semáforo de cocina
+- Evento: `lista-espera-actualizada` - Cambios en lista de espera
+
+---
+
+## 🔐 Autenticación (Pendiente de Implementar)
+
+**Estado actual:** La app tiene la estructura de autenticación preparada pero no está conectada.
+
+**Próximos pasos:**
+1. Implementar endpoint de login en el backend (`POST /auth/login`)
+2. Conectar con Supabase Auth
+3. Validar PIN de staff contra tabla `staff`
+4. Generar JWT con rol del usuario (gerencia/hostess/mesero)
+
+**Mientras tanto:** Puedes testear las funcionalidades sin autenticación, ya que los endpoints aún no requieren token.
+
+---
+
+## 📊 Arquitectura de la App
+
 ```
-POST   /auth/login              # Login de staff
-GET    /mesas                   # Listar mesas
-PATCH  /mesas/:id/estado        # Cambiar estado mesa
-GET    /reservas                # Listar reservas
-POST   /reservas                # Crear reserva (envía SMS/WhatsApp)
-GET    /clientes                # Listar clientes CRM
-GET    /lista-espera            # Listar walk-ins
-POST   /lista-espera            # Agregar walk-in
-GET    /pacing/estado           # Estado del pacing engine
+apps/mobile/
+├── src/
+│   ├── config/
+│   │   ├── api.ts          # Configuración de conexión al backend
+│   │   └── socket.ts       # Configuración de WebSocket
+│   ├── screens/
+│   │   ├── LoginScreen.tsx
+│   │   ├── FloorScreen.tsx # Plano de mesas
+│   │   ├── ReservasScreen.tsx
+│   │   └── ...
+│   ├── store/
+│   │   ├── authStore.ts    # Zustand store para auth
+│   │   └── salaStore.ts    # Zustand store para mesas/reservas
+│   ├── services/
+│   │   └── api.ts          # Cliente API (fetch endpoints)
+│   └── navigation/
+│       └── AppNavigator.tsx
+└── App.tsx
 ```
 
 ---
 
-## ✅ Checklist de Prueba
+## 🐛 Troubleshooting
 
-- [ ] App cargada exitosamente en Expo Go
-- [ ] Usuario creado en Supabase Auth
-- [ ] Login exitoso con credenciales de staff
-- [ ] Navegación funciona (4 tabs visibles)
-- [ ] Plano de mesas muestra 20 mesas con estados
-- [ ] Lista de reservas muestra 3 reservas seed
-- [ ] CRM muestra 10 clientes con datos completos
-- [ ] Lista de espera muestra 2 walk-ins
-- [ ] WebSocket conectado (indicador en pantalla)
-- [ ] Crear nueva reserva → envía SMS/WhatsApp
-- [ ] Cambiar estado de mesa → actualiza en tiempo real
+### Error: "Unable to connect to Metro"
+**Solución:** Asegúrate de que tu teléfono y computadora estén en la **misma red WiFi**.
 
----
+### Error: "Network request failed"
+**Solución:** 
+1. Verifica que el backend esté en línea: `curl https://tizon-os-production.up.railway.app/health`
+2. Revisa que la variable `EXPO_PUBLIC_API_URL` esté correcta en `.env`
 
-## 🎯 Próximos Pasos Después de Probar
+### La app carga pero no se ve el plano de mesas
+**Solución:**
+1. Verifica que haya datos seed en la base de datos (tabla `mesas`)
+2. Revisa los logs de la terminal de Expo para ver errores de API
 
-1. **Feedback de UX**: ¿Qué funciona bien? ¿Qué mejorar?
-2. **Funcionalidades Faltantes**:
-   - Editar/cancelar reservas
-   - Asignar mesa desde lista de espera
-   - Ver historial de cliente
-   - Notificaciones push
-   - Modo offline
-3. **Testing en Producción**:
-   - Aprobar WhatsApp Business con Meta
-   - Deploy en TestFlight (iOS) y Google Play Internal Testing (Android)
+### WebSocket no conecta
+**Solución:**
+1. Verifica que el backend tenga el gateway de WebSocket iniciado
+2. Revisa logs del backend en Railway: busca `[Sala] Cliente conectado`
 
 ---
 
-**URL del Servidor Expo**: `exp://c646794c8-8081.na120.preview.abacusai.app`  
-**Backend API**: `https://tizon-os-production.up.railway.app`  
-**Supabase Dashboard**: `https://supabase.com/dashboard/project/gfrfnnlasgepepocjddu`
+## 📞 Contacto
+
+**Líder del Proyecto:** Percio Jiménez Ortiz  
+**Email:** perciojimenez@live.com
+
+**Backend en producción:** https://tizon-os-production.up.railway.app  
+**GitHub:** https://github.com/Perciojimenez/tizon-os
 
 ---
 
-**¡La app móvil está lista para probar!** 🚀📱
+## ⏭️ Próximos Pasos
+
+1. **Implementar autenticación completa** (login con PIN de staff)
+2. **Agregar assets visuales** (iconos, splash screen, imágenes de mesas)
+3. **Implementar navegación completa** entre todas las pantallas
+4. **Testing E2E** del flujo completo: crear reserva → enviar WhatsApp → cliente responde → webhook procesa
+5. **Build para producción** con EAS Build (Android APK/iOS IPA)
+
+¡La app está lista para empezar a probar! 🎉
