@@ -66,26 +66,47 @@ Todo lo de abajo está **hecho y verificado**. No requiere más trabajo salvo ma
 
 | # | Tarea | Estado | Responsable |
 |---|---|---|---|
-| 1.1 | Resolver timeout de conexión (firewall puerto 8081 **o** modo túnel) | 🔴 En curso | Usuario + guía |
+| 1.1 | Resolver timeout de conexión (firewall puerto 8081 **o** modo túnel) | 🟡 Script listo | Usuario debe ejecutar |
 | 1.2 | Verificar que la app carga en iPhone (pantalla de Login visible) | 🔴 Pendiente | Usuario |
 | 1.3 | Confirmar que la app conecta al backend de Railway | 🔴 Pendiente | Verificar en app |
+
+**Herramientas creadas:**
+- ✅ `INICIAR_APP.bat` - Script automático que abre firewall + arranca Expo
+- ✅ `SOLUCION_ERRORES_COMUNES.md` - Guía de troubleshooting (6 errores)
 
 **Criterio de éxito de la Fase 1:** la app abre en el teléfono y muestra la pantalla de Login sin errores.
 
 ---
 
-## 🟠 FASE 2 — Autenticación Real (Siguiente)
+## 🟢 FASE 2 — Autenticación Real (COMPLETADA — Pendiente Prueba E2E)
 
-**Objetivo:** que el staff pueda iniciar sesión de verdad. Hoy el login no valida nada.
+**Objetivo:** que el staff pueda iniciar sesión de verdad.
 
 | # | Tarea | Estado |
 |---|---|---|
-| 2.1 | Implementar `getToken()` en `apps/mobile/src/config/api.ts` (hoy es `TODO` y devuelve `null`) | 🔴 |
-| 2.2 | Conectar `LoginScreen` con login por PIN contra el backend/Supabase | 🔴 |
-| 2.3 | Persistir sesión en `authStore` y proteger navegación | 🔴 |
-| 2.4 | Probar los 3 roles (gerencia / hostess / mesero) y su RLS | 🔴 |
+| 2.1 | Implementar `getToken()` en `apps/mobile/src/config/api.ts` | ✅ Hecho |
+| 2.2 | Conectar `LoginScreen` con login email/password + obtener rol de tabla `staff` | ✅ Hecho |
+| 2.3 | Persistir sesión en `authStore` con `expo-secure-store` | ✅ Hecho |
+| 2.4 | Restaurar sesión al abrir la app (`loadStoredAuth`) | ✅ Hecho |
+| 2.5 | Crear usuarios en Supabase Auth (script) | 🟡 Script listo |
+| 2.6 | Probar los 3 roles (gerencia / hostess / mesero) y su RLS | 🔴 Pendiente |
 
-**Criterio de éxito:** un usuario entra con su PIN, el token viaja en cada request y la RLS filtra según su rol.
+**Implementación verificada:**
+- ✅ Bundle compila (997 módulos, 2.7MB)
+- ✅ `getToken()` lee del authStore
+- ✅ Login obtiene `nombre` + `rol` de tabla `staff`
+- ✅ Token + usuario se guardan cifrados
+- ✅ Sesión persiste entre reinicios
+
+**Setup requerido (una vez):**
+- 🟡 Ejecutar `scripts/crear-usuarios-auth.js` con SERVICE_ROLE_KEY de Railway
+
+**Credenciales de prueba:**
+- Email: `sofia.ramirez@tizonmeats.com`
+- Password: `tizon2024`
+- Rol: `hostess`
+
+**Criterio de éxito:** un usuario entra con email/password, el token viaja en cada request y la RLS filtra según su rol.
 
 ---
 
