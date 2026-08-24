@@ -26,8 +26,8 @@ export class SmsController {
    * TODO: Eliminar antes de producción final
    */
   @Post('test/enviar')
-  async enviarSmsTest(@Body() body: { telefono: string; nombre: string; tipo?: string }) {
-    const { telefono, nombre, tipo = 'confirmacion' } = body;
+  async enviarSmsTest(@Body() body: { telefono: string; nombre: string; tipo?: string; canal?: 'sms' | 'whatsapp' }) {
+    const { telefono, nombre, tipo = 'confirmacion', canal } = body;
 
     if (tipo === 'confirmacion') {
       return this.smsService.enviarSmsConfirmacion(
@@ -38,6 +38,7 @@ export class SmsController {
         '2026-08-24',
         '20:00',
         2,
+        canal,
       );
     } else if (tipo === 'recordatorio') {
       return this.smsService.enviarSmsRecordatorio(
@@ -46,13 +47,14 @@ export class SmsController {
         nombre,
         '20:00',
         'TZN-TEST',
+        canal,
       );
     } else if (tipo === 'lista_espera') {
-      return this.smsService.enviarSmsListaEspera(nombre, telefono);
+      return this.smsService.enviarSmsListaEspera(nombre, telefono, canal);
     } else if (tipo === 'agradecimiento') {
-      return this.smsService.enviarSmsAgradecimiento(null, telefono, nombre);
+      return this.smsService.enviarSmsAgradecimiento(null, telefono, nombre, canal);
     }
 
-    return { error: 'Tipo de SMS no reconocido' };
+    return { error: 'Tipo de mensaje no reconocido' };
   }
 }
