@@ -6,8 +6,8 @@
 const API_URL = 'https://tizon-os-production.up.railway.app';
 
 // TU número de teléfono (el que conectaste al Sandbox de Twilio con "join force-zebra")
-const TU_NUMERO = '+18297224351';
-const TU_NOMBRE = 'Percio';
+const TU_NUMERO = '+18295217466';
+const TU_NOMBRE = 'Cliente';
 
 async function enviarWhatsAppTest() {
   console.log('🚀 PRUEBA DE FLUJO WHATSAPP - Tizón OS\n');
