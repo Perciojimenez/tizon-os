@@ -96,8 +96,8 @@ export const LoginScreen = ({ navigation }: any) => {
         )}
       </TouchableOpacity>
 
-      <Text style={styles.footer}>Credenciales de demo:</Text>
-      <Text style={styles.footerSmall}>hostess@tizon.local / demo123</Text>
+      <Text style={styles.footer}>Credenciales de prueba:</Text>
+      <Text style={styles.footerSmall}>sofia.ramirez@tizonmeats.com / tizon2024</Text>
     </View>
   );
 };
