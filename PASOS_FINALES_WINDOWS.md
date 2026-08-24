@@ -1,12 +1,13 @@
-# ✅ Pasos Finales — Ya Arreglé el Problema
+# ✅ Pasos Finales — Versión Actualizada con Script Automático
 
-## 🎯 Qué Estaba Pasando
+## 🎯 Qué Estaba Pasando (Resuelto)
 
-El error *"There was a problem running the requested app"* pasaba porque el proyecto usaba una **versión vieja de Expo (SDK 49, de 2023)** y el **Expo Go** que descargaste hoy solo funciona con la **versión nueva (SDK 57)**.
+Había **2 problemas** que impedían que la app abriera en el teléfono:
 
-**Ya actualicé todo el proyecto a Expo SDK 57** y lo probé (compila sin errores en iPhone y Android). También arreglé unas imágenes que faltaban. Todo está subido a GitHub. ✅
+1. **Versión vieja de Expo**: El proyecto usaba SDK 49 (2023) y Expo Go de hoy solo funciona con SDK 57 → **✅ Actualizado**
+2. **Firewall de Windows bloqueando el puerto 8081** → **✅ Ahora hay un script .bat que lo abre automáticamente**
 
-Ahora solo necesitas **descargar la versión nueva** en tu PC. Son 5 comandos.
+**Todo está arreglado y subido a GitHub.** Ahora solo necesitas descargar la versión nueva.
 
 ---
 
@@ -41,16 +42,45 @@ git clone https://github.com/Perciojimenez/tizon-os.git
 cd tizon-os\apps\mobile
 ```
 
-### 5️⃣ Instala y arranca
+### 5️⃣ Instala las dependencias
 
 ```
 npm install
 ```
 *(Espera 1-3 minutos. Verás muchos mensajes amarillos "warn" — son normales, NO son errores.)*
 
+---
+
+## 🚀 Arrancar el Servidor (2 Opciones)
+
+### ⭐ OPCIÓN A — Script Automático (RECOMENDADA)
+
+1. Abre el **Explorador de Archivos** → ve a: `C:\Users\perci\Desktop\tizon-os\apps\mobile`
+2. Busca el archivo **`INICIAR_APP.bat`**
+3. **Click derecho** en el archivo → **"Ejecutar como administrador"**
+4. Cuando te pregunte "¿Quieres permitir que esta aplicación haga cambios?", click en **"Sí"**
+
+El script hace TODO automáticamente:
+- ✅ Abre el firewall (puerto 8081)
+- ✅ Verifica dependencias
+- ✅ Arranca Expo
+- ✅ Muestra el QR
+
+**⚠️ IMPORTANTE:** Tienes que ejecutarlo **como administrador** (click derecho → "Ejecutar como administrador"), sino no podrá abrir el firewall.
+
+---
+
+### 🔧 OPCIÓN B — Manual (Si la Opción A no funciona)
+
+Desde CMD (ya debes estar en `tizon-os\apps\mobile`):
+
 ```
 npm start
 ```
+
+Si aparece una ventana del Firewall de Windows:
+- **Marca "Redes privadas"**
+- **Click en "Permitir acceso"**
 
 ---
 
