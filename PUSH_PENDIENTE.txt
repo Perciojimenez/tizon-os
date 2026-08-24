@@ -1,0 +1,37 @@
+📤 COMMITS PENDIENTES DE PUSH A GITHUB
+=========================================
+
+Tienes 2 commits locales que necesitan ser pusheados:
+
+1. ce2ba0a - WhatsApp configurado como canal por defecto + script helper para crear reservas de prueba
+2. b6d9106 - feat(mobile): guía completa para prueba de app móvil en dispositivo - Expo Go
+
+PARA PUSHEAR DESDE TU COMPUTADORA:
+-----------------------------------
+
+1. Clona el proyecto (si aún no lo tienes):
+   git clone https://github.com/Perciojimenez/tizon-os.git
+
+2. O si ya lo tienes clonado, haz pull:
+   git pull origin main
+
+3. Copia los archivos nuevos/modificados de esta sesión a tu repo local:
+   - /home/ubuntu/tizon-os/GUIA_PRUEBA_MOBILE.md
+   - /home/ubuntu/tizon-os/scripts/crear-reserva-test-whatsapp.js
+
+4. Haz commit y push:
+   git add .
+   git commit -m "sync: WhatsApp + guía mobile desde sesión de desarrollo"
+   git push origin main
+
+O DESCARGA EL ZIP COMPLETO:
+----------------------------
+Puedes descargar todo el proyecto actualizado como ZIP desde los archivos
+disponibles en esta sesión y extraerlo localmente.
+
+ESTADO ACTUAL:
+--------------
+✅ Backend en Railway: https://tizon-os-production.up.railway.app
+✅ WhatsApp configurado y funcionando
+✅ App móvil lista para probar
+⏳ Push a GitHub pendiente (token expirado en el entorno de desarrollo)
