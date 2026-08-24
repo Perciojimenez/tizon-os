@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 Guía Visual - Instalar Tizón OS en iPhone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+        
+        .step {
+            margin: 40px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .step-title {
+            font-size: 1.8em;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .step-content {
+            margin-left: 80px;
+        }
+        
+        .screenshot {
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .screenshot img {
+            width: 100%;
+            display: block;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .code-block code {
+            font-size: 1.1em;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .warning-title {
+            font-weight: bold;
+            color: #856404;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .success-title {
+            font-weight: bold;
+            color: #155724;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        
+        .emoji {
+            font-size: 1.3em;
+        }
+        
+        .qr-example {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .qr-example p {
+            margin-top: 15px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .device-mockup {
+            max-width: 300px;
+            margin: 20px auto;
+            padding: 15px;
+            background: #333;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .device-screen {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 15px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: white;
+        }
+        
+        .footnote {
+            margin-top: 40px;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .step-content {
+                margin-left: 0;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="emoji">📱</span> Guía Visual Completa</h1>
+        <div class="subtitle">Instalar Tizón OS en tu iPhone - Paso a Paso</div>
+        
+        <div class="warning">
+            <div class="warning-title">⚠️ MUY IMPORTANTE - Lee Esto Primero</div>
+            <p>El servidor de Expo debe ejecutarse en <strong>TU COMPUTADORA</strong> (Mac o PC), <strong>NO</strong> en este entorno de desarrollo.</p>
+            <p>Tu iPhone se conectará a tu computadora a través de <strong>WiFi</strong>.</p>
+        </div>
+
+        <!-- PASO 1 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">Descargar Expo Go en tu iPhone</div>
+            </div>
+            <div class="step-content">
+                <p><strong>En tu iPhone:</strong></p>
+                <ul>
+                    <li><span class="emoji">📱</span> Abre la app <span class="highlight">App Store</span></li>
+                    <li><span class="emoji">🔍</span> Busca <span class="highlight">"Expo Go"</span></li>
+                    <li><span class="emoji">⬇️</span> Toca el botón <span class="highlight">"Obtener"</span> para instalar</li>
+                    <li><span class="emoji">✅</span> Espera a que se instale (es gratis, ~75 MB)</li>
+                </ul>
+                
+                <div class="device-mockup">
+                    <div class="device-screen">
+                        <div class="app-icon">🚀</div>
+                        <strong style="font-size: 1.2em;">Expo Go</strong>
+                        <p style="margin: 10px 0; color: #666; font-size: 0.9em;">Developer Tools</p>
+                        <div style="background: #007AFF; color: white; padding: 10px; border-radius: 8px; font-weight: bold;">
+                            OBTENER
+                        </div>
+                    </div>
+                </div>
+                
+                <p style="text-align: center; color: #666; margin-top: 20px;">
+                    <em>Así se ve en el App Store ☝️</em>
+                </p>
+            </div>
+        </div>
+
+        <!-- PASO 2 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">Preparar el Proyecto en tu Computadora</div>
+            </div>
+            <div class="step-content">
+                <p><strong>En tu Mac o PC:</strong></p>
+                
+                <h3 style="margin: 20px 0 10px 0;">Opción A: Clonar desde GitHub (Recomendado)</h3>
+                <p>Abre <strong>Terminal</strong> (Mac) o <strong>Command Prompt</strong> (Windows) y ejecuta:</p>
+                
+                <div class="code-block">
+                    <code># 1. Clona el repositorio
+git clone https://github.com/Perciojimenez/tizon-os.git
+
+# 2. Entra a la carpeta mobile
+cd tizon-os/apps/mobile
+
+# 3. Instala las dependencias
+npm install</code>
+                </div>
+                
+                <div class="warning">
+                    <div class="warning-title">💡 ¿No tienes Node.js instalado?</div>
+                    <p>Si ves un error "npm: command not found":</p>
+                    <ol style="margin-left: 20px;">
+                        <li>Ve a <strong>https://nodejs.org/</strong></li>
+                        <li>Descarga la versión <strong>LTS</strong> (recomendada)</li>
+                        <li>Instala y reinicia la Terminal</li>
+                        <li>Ejecuta de nuevo: <code>npm install</code></li>
+                    </ol>
+                </div>
+                
+                <h3 style="margin: 20px 0 10px 0;">Opción B: Descargar ZIP</h3>
+                <p>Si no tienes Git instalado:</p>
+                <ul>
+                    <li>Descarga el archivo <code>tizon-os-completo.zip</code></li>
+                    <li>Descomprímelo en tu computadora</li>
+                    <li>Abre Terminal y navega a la carpeta</li>
+                    <li>Ejecuta <code>npm install</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- PASO 3 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">Iniciar el Servidor de Expo</div>
+            </div>
+            <div class="step-content">
+                <p><strong>En la Terminal, dentro de la carpeta <code>tizon-os/apps/mobile</code>:</strong></p>
+                
+                <div class="code-block">
+                    <code>npm start</code>
+                </div>
+                
+                <p style="margin: 20px 0;">Verás algo así en la Terminal:</p>
+                
+                <div class="code-block">
+                    <code>Starting Metro Bundler
+› Metro waiting on exp://192.168.1.100:8081
+
+<span style="color: #4CAF50;">█▀▀▀▀▀█</span> <span style="color: #4CAF50;">▀▀█▀▀▀</span> <span style="color: #4CAF50;">▀█▀█▀</span> <span style="color: #4CAF50;">█▀▀▀▀▀█</span>
+<span style="color: #4CAF50;">█ ███ █</span> <span style="color: #4CAF50;">▀▀█▀▀▀</span> <span style="color: #4CAF50;">█▀█▀█</span> <span style="color: #4CAF50;">█ ███ █</span>
+<span style="color: #4CAF50;">█ ▀▀▀ █</span> <span style="color: #4CAF50;">█▀█▀█▀</span> <span style="color: #4CAF50;">▀█▀█▀</span> <span style="color: #4CAF50;">█ ▀▀▀ █</span>
+<span style="color: #4CAF50;">▀▀▀▀▀▀▀</span> <span style="color: #4CAF50;">▀ █ █ ▀</span> <span style="color: #4CAF50;">█ ▀</span> <span style="color: #4CAF50;">▀▀▀▀▀▀▀</span>
+
+› Scan the QR code above with Expo Go (Android) or the Camera app (iOS)
+
+› Press a │ open Android
+› Press i │ open iOS simulator
+› Press w │ open web</code>
+                </div>
+                
+                <div class="qr-example">
+                    <div style="font-size: 5em; color: #667eea;">📱</div>
+                    <div style="font-size: 3em; margin: 20px 0;">⬆️</div>
+                    <p><strong>¡El código QR aparecerá aquí en la Terminal!</strong></p>
+                    <p>Este código es lo que escanearás con tu iPhone en el siguiente paso</p>
+                </div>
+                
+                <div class="success">
+                    <div class="success-title">✅ Servidor Listo</div>
+                    <p>Si ves el código QR, ¡perfecto! El servidor está corriendo.</p>
+                    <p><strong>NO CIERRES</strong> esta ventana de Terminal. Debe quedar abierta mientras usas la app.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 4 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">Conectar tu iPhone al Servidor</div>
+            </div>
+            <div class="step-content">
+                <div class="warning">
+                    <div class="warning-title">📡 Requisito Importante</div>
+                    <p>Tu <strong>iPhone</strong> y tu <strong>computadora</strong> deben estar en la <strong>misma red WiFi</strong>.</p>
+                    <p>Verifica que ambos dispositivos estén conectados al mismo router WiFi.</p>
+                </div>
+                
+                <h3 style="margin: 20px 0 10px 0;">Método 1: Con la Cámara de iOS (Más Fácil) ⭐</h3>
+                <ol>
+                    <li><span class="emoji">📷</span> En tu iPhone, abre la app <strong>Cámara</strong> (la app nativa de iOS)</li>
+                    <li><span class="emoji">📸</span> Apunta la cámara al <strong>código QR</strong> que aparece en la Terminal</li>
+                    <li><span class="emoji">🔔</span> Aparecerá una <strong>notificación</strong> en la parte superior: "Abrir en Expo Go"</li>
+                    <li><span class="emoji">👆</span> <strong>Toca la notificación</strong></li>
+                    <li><span class="emoji">⏳</span> Expo Go se abrirá automáticamente y comenzará a cargar la app</li>
+                </ol>
+                
+                <div class="grid-2">
+                    <div style="padding: 20px; background: white; border-radius: 10px; border: 2px solid #ddd;">
+                        <div style="text-align: center; font-size: 3em; margin-bottom: 10px;">📷</div>
+                        <strong>1. Abre Cámara</strong>
+                        <p style="margin-top: 10px; color: #666;">La app Cámara nativa de iOS</p>
+                    </div>
+                    <div style="padding: 20px; background: white; border-radius: 10px; border: 2px solid #ddd;">
+                        <div style="text-align: center; font-size: 3em; margin-bottom: 10px;">📱</div>
+                        <strong>2. Escanea el QR</strong>
+                        <p style="margin-top: 10px; color: #666;">Apunta al código de la Terminal</p>
+                    </div>
+                    <div style="padding: 20px; background: white; border-radius: 10px; border: 2px solid #ddd;">
+                        <div style="text-align: center; font-size: 3em; margin-bottom: 10px;">🔔</div>
+                        <strong>3. Notificación</strong>
+                        <p style="margin-top: 10px; color: #666;">"Abrir en Expo Go"</p>
+                    </div>
+                    <div style="padding: 20px; background: white; border-radius: 10px; border: 2px solid #ddd;">
+                        <div style="text-align: center; font-size: 3em; margin-bottom: 10px;">🚀</div>
+                        <strong>4. ¡Se Abre!</strong>
+                        <p style="margin-top: 10px; color: #666;">La app carga automáticamente</p>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 30px 0 10px 0;">Método 2: Desde Expo Go Directamente</h3>
+                <ol>
+                    <li>Abre la app <strong>Expo Go</strong> en tu iPhone</li>
+                    <li>Toca el botón <strong>"Scan QR code"</strong></li>
+                    <li>Escanea el código QR de la Terminal</li>
+                    <li>La app comenzará a cargar</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- PASO 5 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title">¡La App Se Está Cargando!</div>
+            </div>
+            <div class="step-content">
+                <p>Una vez que escanees el código QR:</p>
+                
+                <div style="background: white; padding: 30px; border-radius: 10px; margin: 20px 0;">
+                    <h3 style="color: #667eea; text-align: center; margin-bottom: 20px;">Proceso de Carga</h3>
+                    
+                    <div style="margin: 15px 0;">
+                        <strong>1️⃣ Conectando al servidor...</strong>
+                        <div style="background: #e9ecef; height: 10px; border-radius: 5px; margin-top: 10px; overflow: hidden;">
+                            <div style="background: #667eea; height: 100%; width: 33%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <strong>2️⃣ Compilando JavaScript...</strong>
+                        <div style="background: #e9ecef; height: 10px; border-radius: 5px; margin-top: 10px; overflow: hidden;">
+                            <div style="background: #667eea; height: 100%; width: 66%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <strong>3️⃣ Cargando componentes...</strong>
+                        <div style="background: #e9ecef; height: 10px; border-radius: 5px; margin-top: 10px; overflow: hidden;">
+                            <div style="background: #667eea; height: 100%; width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="success">
+                    <div class="success-title">⏱️ Tiempo de Carga</div>
+                    <p><strong>Primera vez:</strong> 30-60 segundos (compila todo el proyecto)</p>
+                    <p><strong>Siguientes veces:</strong> 5-10 segundos (usa caché)</p>
+                </div>
+                
+                <p style="margin: 20px 0;"><strong>En la Terminal de tu computadora verás:</strong></p>
+                
+                <div class="code-block">
+                    <code><span style="color: #4CAF50;">› Opening exp://192.168.1.100:8081 on iPhone de Percio</span>
+<span style="color: #4CAF50;">› Bundling JavaScript... 100%</span>
+<span style="color: #FFD700;">LOG  [Sala] Cliente conectado: abc123...</span></code>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 6 -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">6</div>
+                <div class="step-title">¡Listo! La App Está Funcionando</div>
+            </div>
+            <div class="step-content">
+                <div class="success">
+                    <div class="success-title">🎉 ¡Éxito!</div>
+                    <p>Si ves la pantalla de inicio de <strong>Tizón OS</strong> en tu iPhone, todo está funcionando correctamente.</p>
+                </div>
+                
+                <h3 style="margin: 20px 0 10px 0;">¿Qué Puedes Hacer Ahora?</h3>
+                <ul>
+                    <li><span class="emoji">🪑</span> <strong>Ver el plano de mesas</strong> en tiempo real</li>
+                    <li><span class="emoji">📅</span> <strong>Crear reservas</strong> → Se envía WhatsApp automático al cliente</li>
+                    <li><span class="emoji">👥</span> <strong>Gestionar lista de espera</strong> → Notifica cuando hay mesa disponible</li>
+                    <li><span class="emoji">👤</span> <strong>Buscar clientes</strong> en el CRM</li>
+                    <li><span class="emoji">⚡</span> <strong>Ver cambios en vivo</strong> → Actualizaciones en tiempo real vía WebSocket</li>
+                </ul>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #667eea;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">🔄 Recargar la App</h4>
+                    <p><strong>Desde tu iPhone:</strong> Agita el iPhone → Se abre el menú de desarrollo → Toca "Reload"</p>
+                    <p><strong>Desde la Terminal:</strong> Presiona la tecla <code>r</code> para recargar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TROUBLESHOOTING -->
+        <div class="step" style="border-left-color: #ffc107;">
+            <div class="step-header">
+                <div class="step-number" style="background: #ffc107;">⚠️</div>
+                <div class="step-title">Solución de Problemas</div>
+            </div>
+            <div class="step-content">
+                <h3 style="margin: 20px 0 10px 0;">❌ "Unable to connect to Metro"</h3>
+                <div class="warning">
+                    <p><strong>Problema:</strong> Tu iPhone no puede conectarse al servidor.</p>
+                    <p><strong>Solución 1:</strong> Verifica que iPhone y computadora estén en la <strong>misma red WiFi</strong>.</p>
+                    <p><strong>Solución 2:</strong> Usa el modo túnel (funciona sin estar en la misma red):</p>
+                    <div class="code-block">
+                        <code>npm start -- --tunnel</code>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 30px 0 10px 0;">❌ "Network request failed"</h3>
+                <div class="warning">
+                    <p><strong>Problema:</strong> La app carga pero no se conecta al backend.</p>
+                    <p><strong>Solución:</strong> Verifica que el archivo <code>.env</code> exista en <code>apps/mobile/</code> con:</p>
+                    <div class="code-block">
+                        <code>EXPO_PUBLIC_API_URL=https://tizon-os-production.up.railway.app</code>
+                    </div>
+                    <p>Luego reinicia el servidor (Ctrl+C y <code>npm start</code> de nuevo).</p>
+                </div>
+                
+                <h3 style="margin: 30px 0 10px 0;">❌ La app se ve en blanco</h3>
+                <div class="warning">
+                    <p><strong>Solución:</strong></p>
+                    <ul>
+                        <li>En la Terminal, presiona <strong>r</strong> para recargar</li>
+                        <li>En el iPhone, <strong>agita el teléfono</strong> → "Reload"</li>
+                        <li>Cierra Expo Go completamente y vuelve a escanear el QR</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footnote">
+            <p><strong>🎉 ¡Felicidades! Tu sistema Tizón OS está completamente operativo.</strong></p>
+            <p style="margin-top: 10px;">Backend: <a href="https://tizon-os-production.up.railway.app" target="_blank" style="color: #667eea;">https://tizon-os-production.up.railway.app</a></p>
+            <p>GitHub: <a href="https://github.com/Perciojimenez/tizon-os" target="_blank" style="color: #667eea;">https://github.com/Perciojimenez/tizon-os</a></p>
+        </div>
+    </div>
+</body>
+</html>
