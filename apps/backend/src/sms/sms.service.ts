@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { supabaseAdmin } from '../config/supabase.config';
 import * as twilio from 'twilio';
+import { SalaGateway } from '../websocket/websocket.gateway';
 
 export type CanalMensaje = 'sms' | 'whatsapp';
 
@@ -17,7 +18,9 @@ export class SmsService {
     (process.env.CANAL_DEFAULT as CanalMensaje) || 'whatsapp';
   private twilioClient: twilio.Twilio;
 
-  constructor() {
+  constructor(
+    @Inject(forwardRef(() => SalaGateway)) private salaGateway: SalaGateway,
+  ) {
     if (this.twilioSid && this.twilioToken) {
       this.twilioClient = twilio.default(this.twilioSid, this.twilioToken);
     } else {
@@ -209,6 +212,14 @@ export class SmsService {
 
       await this.registrarSms(cliente.id, telefonoLimpio, 'recordatorio', respuesta, 'recibido', `1 - confirmada (${canalEntrante})`);
       
+      // Emitir evento WebSocket para actualizar UI en tiempo real
+      try {
+        this.salaGateway.emitirReservaConfirmada(reserva.id, reserva.codigo_unico);
+        console.log(`🔄 WebSocket: Cliente confirmó reserva ${reserva.codigo_unico} vía ${canalEntrante}`);
+      } catch (wsError) {
+        console.error('⚠️ Error al emitir evento WebSocket:', wsError);
+      }
+
       return { procesado: true, accion: 'confirmada', reservaId: reserva.id };
     } 
     else if (texto === '2' || texto.includes('cancelar') || texto.includes('no')) {
@@ -219,6 +230,14 @@ export class SmsService {
         .eq('id', reserva.id);
 
       await this.registrarSms(cliente.id, telefonoLimpio, 'recordatorio', respuesta, 'recibido', `2 - cancelada (${canalEntrante})`);
+
+      // Emitir evento WebSocket para actualizar UI en tiempo real
+      try {
+        this.salaGateway.emitirReservaConfirmada(reserva.id, reserva.codigo_unico);
+        console.log(`🔄 WebSocket: Cliente canceló reserva ${reserva.codigo_unico} vía ${canalEntrante}`);
+      } catch (wsError) {
+        console.error('⚠️ Error al emitir evento WebSocket:', wsError);
+      }
 
       return { procesado: true, accion: 'cancelada', reservaId: reserva.id };
     }

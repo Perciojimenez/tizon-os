@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { supabaseAdmin } from '../config/supabase.config';
 import { CodigoUnicoService } from './codigo-unico.service';
 import { SmsService } from '../sms/sms.service';
+import { SalaGateway } from '../websocket/websocket.gateway';
 
 @Injectable()
 export class ReservasService {
   constructor(
     private codigoService: CodigoUnicoService,
     private smsService: SmsService,
+    @Inject(forwardRef(() => SalaGateway)) private salaGateway: SalaGateway,
   ) {}
 
   async crearReserva(clienteId: string, mesaId: string, fecha: string, horaInicio: string, numComensales: number, creadoPor: string, notasServicio?: string) {
@@ -31,7 +33,15 @@ export class ReservasService {
 
     if (error) throw new Error(`Error al crear reserva: ${error.message}`);
 
-    // Enviar SMS de confirmación automáticamente
+    // Emitir evento WebSocket para actualizar UI en tiempo real
+    try {
+      this.salaGateway.emitirReservaConfirmada(data.id, codigoUnico);
+      console.log(`🔄 WebSocket: Reserva confirmada emitida (${codigoUnico})`);
+    } catch (wsError) {
+      console.error('⚠️ Error al emitir evento WebSocket:', wsError);
+    }
+
+    // Enviar SMS/WhatsApp de confirmación automáticamente
     try {
       const { data: cliente } = await supabaseAdmin
         .from('clientes')
@@ -48,12 +58,13 @@ export class ReservasService {
           fecha,
           horaInicio,
           numComensales,
+          'whatsapp', // Usar WhatsApp por defecto
         );
-        console.log(`📱 SMS de confirmación enviado a ${cliente.nombre} (${cliente.telefono})`);
+        console.log(`📱 WhatsApp de confirmación enviado a ${cliente.nombre} (${cliente.telefono})`);
       }
     } catch (smsError) {
-      console.error('⚠️ Error al enviar SMS de confirmación:', smsError);
-      // No bloquear la creación de la reserva si falla el SMS
+      console.error('⚠️ Error al enviar WhatsApp de confirmación:', smsError);
+      // No bloquear la creación de la reserva si falla el WhatsApp
     }
 
     return data;
@@ -91,6 +102,15 @@ export class ReservasService {
       .single();
     
     if (error) throw new Error(`Error al actualizar reserva: ${error.message}`);
+
+    // Emitir evento WebSocket para actualizar UI en tiempo real
+    try {
+      this.salaGateway.emitirReservaConfirmada(data.id, data.codigo_unico);
+      console.log(`🔄 WebSocket: Reserva actualizada a estado "${nuevoEstado}" (${data.codigo_unico})`);
+    } catch (wsError) {
+      console.error('⚠️ Error al emitir evento WebSocket:', wsError);
+    }
+
     return data;
   }
 

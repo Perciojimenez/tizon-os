@@ -8,7 +8,7 @@ import { ClientesModule } from './clientes/clientes.module';
 import { ListaEsperaModule } from './lista-espera/lista-espera.module';
 import { PacingModule } from './pacing/pacing.module';
 import { SmsModule } from './sms/sms.module';
-import { WebsocketModule } from './websocket/websocket.module';
+import { WebSocketModule } from './websocket/websocket.module';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { WebsocketModule } from './websocket/websocket.module';
     ListaEsperaModule,
     PacingModule,
     SmsModule,
-    WebsocketModule,
+    WebSocketModule,
   ],
   controllers: [AppController],
 })

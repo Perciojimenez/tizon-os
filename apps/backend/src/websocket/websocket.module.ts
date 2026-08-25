@@ -5,4 +5,4 @@ import { SalaGateway } from './websocket.gateway';
   providers: [SalaGateway],
   exports: [SalaGateway],
 })
-export class WebsocketModule {}
+export class WebSocketModule {}
