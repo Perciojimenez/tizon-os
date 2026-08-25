@@ -19,26 +19,54 @@ echo   TIZON OS - Iniciando Servidor
 echo ========================================
 echo.
 
-:: Verificar si estamos en la carpeta correcta
-if not exist "package.json" (
-    echo [ERROR] No se encontro package.json
-    echo.
-    echo Este script debe ejecutarse desde la carpeta:
-    echo   C:\Users\perci\Desktop\tizon-os\apps\mobile
-    echo.
-    echo Presiona cualquier tecla para salir...
-    pause > nul
-    exit /b 1
+:: ====================================================================
+:: NAVEGACION AUTOMATICA A LA CARPETA CORRECTA
+:: %~dp0 = carpeta donde esta este archivo .bat
+:: Esto permite ejecutar el script como administrador sin importar
+:: desde donde se abra el CMD (ej: C:\Windows\System32)
+:: ====================================================================
+
+echo [0/3] Ubicando la carpeta del proyecto...
+
+:: Opcion 1: El .bat esta en la raiz de tizon-os, la app esta en apps\mobile
+if exist "%~dp0apps\mobile\package.json" (
+    cd /d "%~dp0apps\mobile"
+    echo       [OK] Carpeta encontrada: %CD%
+    goto :carpeta_ok
 )
 
-:: Verificar que el archivo app.json existe (confirmación de que estamos en mobile)
-if not exist "app.json" (
-    echo [ERROR] No se encontro app.json
-    echo Estas en la carpeta correcta?
-    echo.
-    pause
-    exit /b 1
+:: Opcion 2: El .bat esta en la misma carpeta que package.json (apps\mobile)
+if exist "%~dp0package.json" (
+    cd /d "%~dp0"
+    echo       [OK] Carpeta encontrada: %CD%
+    goto :carpeta_ok
 )
+
+:: Opcion 3: Ruta absoluta de respaldo
+if exist "C:\Users\perci\Desktop\tizon-os\apps\mobile\package.json" (
+    cd /d "C:\Users\perci\Desktop\tizon-os\apps\mobile"
+    echo       [OK] Carpeta encontrada: %CD%
+    goto :carpeta_ok
+)
+
+:: Si nada funciono, mostrar error
+echo.
+echo [ERROR] No se encontro la carpeta del proyecto
+echo.
+echo Se busco en:
+echo   - %~dp0apps\mobile
+echo   - %~dp0
+echo   - C:\Users\perci\Desktop\tizon-os\apps\mobile
+echo.
+echo SOLUCION: Asegurate de que este archivo .bat este dentro de
+echo la carpeta tizon-os (donde lo descargaste con git).
+echo.
+echo Presiona cualquier tecla para salir...
+pause > nul
+exit /b 1
+
+:carpeta_ok
+echo.
 
 echo [1/3] Verificando permisos de firewall...
 echo.
