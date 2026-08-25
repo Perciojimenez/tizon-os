@@ -31,21 +31,18 @@ echo [0/3] Ubicando la carpeta del proyecto...
 :: Opcion 1: El .bat esta en la raiz de tizon-os, la app esta en apps\mobile
 if exist "%~dp0apps\mobile\package.json" (
     cd /d "%~dp0apps\mobile"
-    echo       [OK] Carpeta encontrada: %CD%
     goto :carpeta_ok
 )
 
 :: Opcion 2: El .bat esta en la misma carpeta que package.json (apps\mobile)
 if exist "%~dp0package.json" (
     cd /d "%~dp0"
-    echo       [OK] Carpeta encontrada: %CD%
     goto :carpeta_ok
 )
 
 :: Opcion 3: Ruta absoluta de respaldo
 if exist "C:\Users\perci\Desktop\tizon-os\apps\mobile\package.json" (
     cd /d "C:\Users\perci\Desktop\tizon-os\apps\mobile"
-    echo       [OK] Carpeta encontrada: %CD%
     goto :carpeta_ok
 )
 
@@ -66,6 +63,8 @@ pause > nul
 exit /b 1
 
 :carpeta_ok
+echo       [OK] Carpeta del proyecto:
+echo       %CD%
 echo.
 
 echo [1/3] Verificando permisos de firewall...
