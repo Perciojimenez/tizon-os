@@ -10,6 +10,7 @@ import { ReservasScreen } from '../screens/ReservasScreen';
 import { NuevaReservaScreen } from '../screens/NuevaReservaScreen';
 import { ListaEsperaScreen } from '../screens/ListaEsperaScreen';
 import { CRMScreen } from '../screens/CRMScreen';
+import { ClienteDetalleScreen } from '../screens/ClienteDetalleScreen';
 import { useAuthStore } from '../store/authStore';
 
 const Tab = createBottomTabNavigator();
@@ -37,7 +38,7 @@ function HomeTabs() {
       <Tab.Screen name="Plano" component={PlanoScreen} options={{ title: 'Plano de Sala' }} />
       <Tab.Screen name="Reservas" component={ReservasStack} options={{ title: 'Reservas', headerShown: false }} />
       <Tab.Screen name="Espera" component={ListaEsperaScreen} options={{ title: 'Lista de Espera' }} />
-      <Tab.Screen name="Clientes" component={CRMScreen} options={{ title: 'Huéspedes' }} />
+      <Tab.Screen name="Clientes" component={CRMStack} options={{ title: 'Huéspedes', headerShown: false }} />
     </Tab.Navigator>
   );
 }
@@ -51,6 +52,19 @@ function ReservasStack() {
     }}>
       <Stack.Screen name="ReservasList" component={ReservasScreen} options={{ title: 'Reservas' }} />
       <Stack.Screen name="NuevaReserva" component={NuevaReservaScreen} options={{ title: 'Nueva Reserva' }} />
+    </Stack.Navigator>
+  );
+}
+
+function CRMStack() {
+  return (
+    <Stack.Navigator screenOptions={{
+      headerStyle: { backgroundColor: '#1a1a1a' },
+      headerTintColor: '#fff',
+      headerTitleStyle: { fontWeight: 'bold' },
+    }}>
+      <Stack.Screen name="CRMList" component={CRMScreen} options={{ title: 'Huéspedes' }} />
+      <Stack.Screen name="ClienteDetalle" component={ClienteDetalleScreen} options={{ title: 'Perfil del Cliente' }} />
     </Stack.Navigator>
   );
 }

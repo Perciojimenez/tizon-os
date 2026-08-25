@@ -107,6 +107,43 @@ export class TizonAPI {
     return res.json();
   }
 
+  async actualizarCliente(
+    id: string,
+    updates: Partial<{
+      nombre: string;
+      telefono: string;
+      email: string;
+      termino_carne_preferido: string;
+      alergias: string[];
+      etiquetas: string[];
+    }>,
+  ) {
+    const res = await fetch(`${this.baseURL}/clientes/${id}`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(updates),
+    });
+    if (!res.ok) throw new Error('Error al actualizar cliente');
+    return res.json();
+  }
+
+  async toggleVIP(id: string) {
+    const res = await fetch(`${this.baseURL}/clientes/${id}/vip`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error('Error al marcar VIP');
+    return res.json();
+  }
+
+  async obtenerReservasCliente(clienteId: string) {
+    const res = await fetch(`${this.baseURL}/reservas?clienteId=${clienteId}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) return [];
+    return res.json();
+  }
+
   // === LISTA DE ESPERA ===
   async obtenerListaEspera() {
     const res = await fetch(`${this.baseURL}/lista-espera`, {
