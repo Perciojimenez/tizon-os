@@ -110,17 +110,30 @@ Todo lo de abajo está **hecho y verificado**. No requiere más trabajo salvo ma
 
 ---
 
-## 🟡 FASE 3 — Flujo End-to-End de Reservas + WhatsApp
+## 🟢 FASE 3 — Flujo End-to-End de Reservas + WhatsApp (IMPLEMENTADO)
 
 **Objetivo:** el ciclo completo de una reserva real con notificación automática.
 
 | # | Tarea | Estado |
 |---|---|---|
-| 3.1 | Crear reserva desde la app (pantalla `NuevaReserva`) → guarda en BD | 🔴 |
-| 3.2 | Envío automático de WhatsApp de confirmación al crear reserva | 🔴 |
-| 3.3 | Respuesta del cliente → webhook → actualización de estado en BD | 🔴 |
-| 3.4 | Reflejar cambios en tiempo real en el plano (WebSocket `/sala`) | 🔴 |
-| 3.5 | Probar recordatorio automático (X horas antes) | 🔴 |
+| 3.1 | Crear reserva desde la app (pantalla `NuevaReserva`) → guarda en BD | ✅ Implementado |
+| 3.2 | Envío automático de WhatsApp de confirmación al crear reserva | ✅ Implementado |
+| 3.3 | Respuesta del cliente → webhook → actualización de estado en BD | ✅ Implementado |
+| 3.4 | Reflejar cambios en tiempo real en el plano (WebSocket `/sala`) | ✅ Implementado |
+| 3.5 | Probar recordatorio automático (X horas antes) | 🟡 Implementado, no probado |
+| 3.6 | **Probar flujo completo E2E en dispositivo Android** | 🔴 Pendiente |
+
+**Implementación completada (commit ea5226f):**
+- ✅ Backend compila sin errores (TypeScript + NestJS build OK)
+- ✅ `ReservasService` integra `SalaGateway` para eventos WebSocket
+- ✅ Auto-envío WhatsApp con Twilio al crear reserva (canal `whatsapp` por defecto)
+- ✅ `SmsService` procesa respuestas del webhook Twilio ("1" confirma, "2" cancela)
+- ✅ WebSocket emite `reserva-confirmada` en cada cambio de estado
+- ✅ Dependencias circulares resueltas con `forwardRef` (NestJS pattern)
+- ✅ Endpoint `/sms/webhook` sin autenticación (para Twilio)
+
+**Documentación creada:**
+- 📄 `FLUJO_E2E_RESERVAS_WHATSAPP.md` - Diagrama de flujo + guía de prueba
 
 **Criterio de éxito:** crear una reserva dispara el WhatsApp, la respuesta del cliente actualiza la mesa y se ve en el plano en vivo.
 
