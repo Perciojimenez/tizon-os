@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { MesasModule } from './mesas/mesas.module';
@@ -16,6 +17,7 @@ import { WebSocketModule } from './websocket/websocket.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     MesasModule,
     ReservasModule,
