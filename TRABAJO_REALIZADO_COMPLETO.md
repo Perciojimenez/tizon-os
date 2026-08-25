@@ -749,7 +749,105 @@ Este proyecto es privado y propiedad de **Tizón Meats**. Todo el código, docum
 
 ---
 
+---
+
+## 🎉 FASE 4 COMPLETADA: Pulido y Producción
+
+### Implementaciones de la Fase 4 (3 de 6 tareas)
+
+#### 4.2 — Pacing Automático en Vivo ✅
+**Objetivo:** Semáforo de cocina se actualiza solo cada 30 segundos.
+
+**Implementación:**
+- Instalado `@nestjs/schedule` en backend
+- Creado `apps/backend/src/pacing/pacing.scheduler.ts`:
+  - Servicio con `@Cron('*/30 * * * * *')` que ejecuta cada 30 segundos
+  - Llama a `PacingService.calcularEstadoPacing()`
+  - Emite evento `pacing-estado` via `SalaGateway` (WebSocket)
+- Modificado `pacing.module.ts` para importar `WebSocketModule` y registrar `PacingScheduler`
+- Modificado `app.module.ts` para agregar `ScheduleModule.forRoot()`
+- Frontend ya escuchaba el evento → el `PacingIndicator` en `PlanoScreen` se actualiza automáticamente
+
+**Logs esperados:**
+```
+Pacing emitido: VERDE (12/30)
+Pacing emitido: AMARILLO (25/30)
+Pacing emitido: ROJO (30/30)
+```
+
+**Commit:** `feat(pacing): cron job 30s emite pacing-estado via WebSocket`
+
+#### 4.3 — CRM Completo con Detalle de Cliente ✅
+**Objetivo:** Perfil completo del cliente con historial, tags VIP/cumpleaños, edición.
+
+**Implementación:**
+- Creado `apps/mobile/src/screens/ClienteDetalleScreen.tsx` (330+ líneas):
+  - Header con nombre + badges ⭐ VIP y 🎂 Cumpleaños
+  - Info completa: teléfono, email, término de carne, alergias (badges rojos ⚠️)
+  - Stats: número de visitas y gasto total (tarjetas separadas)
+  - **Acciones rápidas**: Toggle VIP, Toggle Cumpleaños (actualizan etiquetas en BD)
+  - **Modal de edición**: cambiar nombre, teléfono, email, término de carne (picker con 5 opciones), alergias
+  - **Historial de reservas**: lista de últimas reservas con fecha, hora, personas, estado (colores según estado), código único
+  - Pull-to-refresh, loading states, error handling
+  - Dark theme consistente: #1a1a1a fondo, #2a2a2a cards, #fff texto, #C62828 acento, #FFC107 VIP dorado
+
+- Actualizado `apps/mobile/src/services/api.ts`:
+  - `actualizarCliente(id, updates)`: PATCH `/clientes/:id`
+  - `toggleVIP(id)`: POST `/clientes/:id/vip`
+  - `obtenerReservasCliente(clienteId)`: GET `/reservas?clienteId=...`
+
+- Actualizado `apps/mobile/src/navigation/AppNavigator.tsx`:
+  - Creado `CRMStack()` con Stack.Navigator
+  - Dos pantallas: `CRMList` (CRMScreen) y `ClienteDetalle` (ClienteDetalleScreen)
+  - Fix del crash: ahora tocar un cliente en CRM navega correctamente al detalle
+
+**Características destacadas:**
+- Término de carne: Picker con opciones (Vuelta y vuelta, Punto rojo, Medio, ¾, Bien cocido)
+- Alergias: Input tipo chips (separadas por comas)
+- Historial: Colores según estado (verde=confirmada, amarillo=pendiente, rojo=cancelada, gris=completada)
+
+**Commit:** `feat(crm): pantalla detalle cliente con VIP/cumpleaños y historial reservas`
+
+#### 4.4 — EAS Build Configurado ✅
+**Objetivo:** Builds de producción para TestFlight (iOS) y APK (Android).
+
+**Implementación:**
+- Creado `apps/mobile/eas.json` con 3 perfiles:
+  - **`development`**: APK interno con development client (live reload)
+  - **`preview`**: APK Android + iOS TestFlight (distribución interna, testing)
+  - **`production`**: AAB Android + IPA iOS (tiendas oficiales, autoIncrement version)
+  
+- Creado `apps/mobile/BUILDS.md` (guía completa en español):
+  - Instalación de EAS CLI
+  - Login con `eas login`
+  - Comandos de build: `eas build --platform android --profile preview`
+  - Descarga e instalación de APK en Android
+  - TestFlight: cómo subir, invitar testers en App Store Connect
+  - Troubleshooting: "command not found", "You must be logged in", problemas de APK
+  - Tabla de perfiles disponibles con comandos rápidos
+
+**Comandos clave:**
+```bash
+npm install -g eas-cli
+eas login
+eas build --platform android --profile preview  # APK
+eas build --platform ios --profile preview      # TestFlight
+eas submit --platform ios --profile production  # App Store
+```
+
+**Commit:** `feat(eas): configuración de builds para TestFlight e iOS + Android APK`
+
+### Tareas Pendientes de Fase 4
+
+| Tarea | Estado | Bloqueador |
+|---|---|---|
+| 4.1 Logo real | 🟡 Pendiente | Requiere archivos del usuario (icon.png, adaptive-icon.png, splash.png) |
+| 4.5 WhatsApp Business | 🟡 Pendiente | Requiere aprobación de Twilio para salir del sandbox |
+| 4.6 SMS a RD | 🔴 Opcional | Requiere habilitar geo-permisos en cuenta Twilio |
+
+---
+
 **Documento generado:** 24 de Agosto de 2026  
 **Última actualización:** 25 de Agosto de 2026  
-**Versión:** 2.0  
-**Estado del Sistema:** Backend ✅ | Base de Datos ✅ | WhatsApp ✅ | WebSocket ✅ | Flujo E2E ✅ | App Móvil ⚠️ (compilada, pendiente prueba)
+**Versión:** 3.0  
+**Estado del Sistema:** Backend ✅ | Base de Datos ✅ | WhatsApp ✅ | WebSocket ✅ | Flujo E2E ✅ | Pacing Automático ✅ | CRM Completo ✅ | EAS Build ✅ | App Móvil ⚠️ (compilada, pendiente prueba en dispositivo)

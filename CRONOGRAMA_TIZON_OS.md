@@ -139,18 +139,56 @@ Todo lo de abajo está **hecho y verificado**. No requiere más trabajo salvo ma
 
 ---
 
-## 🟢 FASE 4 — Pulido y Producción
+## 🟢 FASE 4 — Pulido y Producción (MAYORMENTE COMPLETADA)
 
 **Objetivo:** dejarlo listo para el equipo real del restaurante.
 
 | # | Tarea | Estado |
 |---|---|---|
-| 4.1 | Reemplazar assets placeholder por el logo real de Tizón Meats | 🔴 |
-| 4.2 | Motor de Pacing en vivo (semáforo verde/amarillo/rojo real) | 🔴 |
-| 4.3 | CRM: historial, tags VIP/cumpleaños, preferencias por cliente | 🔴 |
-| 4.4 | Build de producción con EAS (TestFlight iOS + APK/Play Android) | 🔴 |
-| 4.5 | Migrar WhatsApp Sandbox → número Business aprobado | 🔴 |
-| 4.6 | (Opcional) Habilitar geo-permisos SMS para RD como fallback | 🔴 |
+| 4.1 | Reemplazar assets placeholder por el logo real de Tizón Meats | 🟡 Pendiente (requiere archivo del usuario) |
+| 4.2 | Motor de Pacing en vivo (semáforo verde/amarillo/rojo real) | ✅ **COMPLETADO** |
+| 4.3 | CRM: historial, tags VIP/cumpleaños, preferencias por cliente | ✅ **COMPLETADO** |
+| 4.4 | Build de producción con EAS (TestFlight iOS + APK/Play Android) | ✅ **COMPLETADO** (configurado) |
+| 4.5 | Migrar WhatsApp Sandbox → número Business aprobado | 🟡 Pendiente (aprobación Twilio) |
+| 4.6 | (Opcional) Habilitar geo-permisos SMS para RD como fallback | 🔴 Pendiente (opcional) |
+
+**Implementación completada (commits recientes):**
+
+### 4.2 — Pacing en Vivo ✅
+- **Backend**: `PacingScheduler` con cron job (`@Cron('*/30 * * * * *')`)
+- Instalado `@nestjs/schedule` y configurado `ScheduleModule.forRoot()` en AppModule
+- Cada 30 segundos: calcula estado (VERDE/AMARILLO/ROJO) y emite `pacing-estado` via WebSocket
+- Frontend ya escucha el evento → PacingIndicator se actualiza automáticamente
+- **Commit**: `feat(pacing): cron job 30s emite pacing-estado via WebSocket`
+
+### 4.3 — CRM Completo ✅
+- **Nueva pantalla**: `ClienteDetalleScreen.tsx`
+  - Header con nombre + badges ⭐ VIP y 🎂 Cumpleaños
+  - Info completa: teléfono, email, término de carne, alergias (badges rojos ⚠️)
+  - Stats: número de visitas y gasto total
+  - **Botones de acción**: Toggle VIP, Toggle Cumpleaños (actualizan etiquetas en BD)
+  - **Modal de edición**: cambiar nombre, teléfono, email, término de carne (picker), alergias
+  - **Historial de reservas**: lista de reservas pasadas con fecha, hora, personas, estado (colores), código
+  - Dark theme: #1a1a1a fondo, #2a2a2a cards, #fff texto, #C62828 acento, #FFC107 VIP
+- **API actualizada**: `actualizarCliente()`, `toggleVIP()`, `obtenerReservasCliente()` en api.ts
+- **Navegación arreglada**: `CRMStack` creado en AppNavigator (fix del crash al tocar cliente)
+- **Commit**: `feat(crm): pantalla detalle cliente con VIP/cumpleaños y historial reservas`
+
+### 4.4 — EAS Build Configurado ✅
+- **`eas.json`** creado con 3 perfiles:
+  - `development`: APK interno con dev client
+  - `preview`: APK Android + iOS TestFlight (distribución interna)
+  - `production`: AAB Android + IPA iOS (tiendas oficiales) con `autoIncrement: true`
+- **`BUILDS.md`**: guía paso a paso en español para hacer builds desde Windows
+  - Instalar EAS CLI, login, build, descargar, instalar APK
+  - TestFlight: cómo subir, invitar testers
+  - Troubleshooting común
+- **Commit**: `feat(eas): configuración de builds para TestFlight e iOS + Android APK`
+
+**Pendientes:**
+- 4.1: Logo real (necesita que el usuario envíe los archivos)
+- 4.5: WhatsApp Business (cuando Twilio apruebe la cuenta, salir del sandbox)
+- 4.6: SMS a RD (opcional, requiere habilitar geo-permisos en Twilio)
 
 ---
 
