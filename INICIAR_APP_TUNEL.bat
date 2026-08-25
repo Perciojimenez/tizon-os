@@ -70,28 +70,11 @@ if not exist "node_modules" (
 echo.
 
 :: ====================================================================
-:: PASO 2: INSTALAR NGROK (necesario para el tunel)
+:: PASO 2: HERRAMIENTA DE TUNEL (ngrok)
 :: ====================================================================
-echo [2/3] Verificando herramienta de tunel (ngrok)...
-echo.
-
-call npm list -g @expo/ngrok >nul 2>&1
-if %errorlevel% neq 0 (
-    echo       [INSTALANDO] Instalando @expo/ngrok globalmente...
-    echo       Esto es necesario para el modo tunel (solo la primera vez).
-    echo.
-    call npm install -g @expo/ngrok@^4.1.0
-    if %errorlevel% neq 0 (
-        echo.
-        echo       [ADVERTENCIA] No se pudo instalar ngrok globalmente.
-        echo       Expo intentara instalarlo automaticamente al arrancar.
-        echo.
-    ) else (
-        echo       [OK] ngrok instalado
-    )
-) else (
-    echo       [OK] ngrok ya instalado
-)
+echo [2/3] Herramienta de tunel...
+echo       Expo instalara ngrok automaticamente al arrancar si hace falta.
+echo       (Si pregunta "Install @expo/ngrok?", escribe: y  y presiona Enter)
 echo.
 
 :: ====================================================================
