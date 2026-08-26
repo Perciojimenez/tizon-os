@@ -7,7 +7,7 @@ export const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { setUser, setToken } = useAuthStore();
+  const { saveSession } = useAuthStore();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -44,9 +44,8 @@ export const LoginScreen = ({ navigation }: any) => {
         throw new Error('No se encontraron datos del usuario');
       }
 
-      // 3. Guardar token y usuario en el store
-      setToken(data.session.access_token);
-      setUser({
+      // 3. Guardar sesión completa (access + refresh token) para auto-renovación
+      await saveSession(data.session.access_token, data.session.refresh_token, {
         id: staffData.id,
         email: staffData.email,
         rol: staffData.rol,

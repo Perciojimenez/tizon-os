@@ -13,66 +13,75 @@ interface AuthStore {
   token: string | null;
   isLoading: boolean;
   error: string | null;
-  
+
   setUser: (user: CurrentUser | null) => void;
   setToken: (token: string | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   logout: () => void;
-  loadStoredAuth: () => Promise<void>;
+  // saveSession guarda access + refresh token para que Supabase pueda renovar automáticamente
+  saveSession: (accessToken: string, refreshToken: string, user: CurrentUser) => Promise<void>;
+  loadStoredSession: () => Promise<{ accessToken: string; refreshToken: string } | null>;
 }
 
-const STORAGE_TOKEN_KEY = 'tizon_auth_token';
-const STORAGE_USER_KEY = 'tizon_auth_user';
+const KEY_TOKEN   = 'tizon_access_token';
+const KEY_REFRESH = 'tizon_refresh_token';
+const KEY_USER    = 'tizon_auth_user';
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   token: null,
   isLoading: false,
   error: null,
-  
+
   setUser: async (user) => {
     set({ user });
     if (user) {
-      await SecureStore.setItemAsync(STORAGE_USER_KEY, JSON.stringify(user));
+      await SecureStore.setItemAsync(KEY_USER, JSON.stringify(user));
     } else {
-      await SecureStore.deleteItemAsync(STORAGE_USER_KEY);
+      await SecureStore.deleteItemAsync(KEY_USER);
     }
   },
-  
-  setToken: async (token) => {
-    set({ token });
-    if (token) {
-      await SecureStore.setItemAsync(STORAGE_TOKEN_KEY, token);
-    } else {
-      await SecureStore.deleteItemAsync(STORAGE_TOKEN_KEY);
-    }
-  },
-  
+
+  setToken: (token) => set({ token }),
+
   setLoading: (isLoading) => set({ isLoading }),
-  setError: (error) => set({ error }),
-  
+  setError:   (error)     => set({ error }),
+
+  // Guarda sesión completa (access + refresh) en SecureStore
+  saveSession: async (accessToken, refreshToken, user) => {
+    set({ token: accessToken, user });
+    await Promise.all([
+      SecureStore.setItemAsync(KEY_TOKEN,   accessToken),
+      SecureStore.setItemAsync(KEY_REFRESH, refreshToken),
+      SecureStore.setItemAsync(KEY_USER,    JSON.stringify(user)),
+    ]);
+  },
+
+  // Carga sesión guardada para restaurarla en Supabase al iniciar
+  loadStoredSession: async () => {
+    try {
+      const [accessToken, refreshToken, storedUser] = await Promise.all([
+        SecureStore.getItemAsync(KEY_TOKEN),
+        SecureStore.getItemAsync(KEY_REFRESH),
+        SecureStore.getItemAsync(KEY_USER),
+      ]);
+      if (accessToken && refreshToken && storedUser) {
+        set({ token: accessToken, user: JSON.parse(storedUser) });
+        return { accessToken, refreshToken };
+      }
+    } catch (e) {
+      console.error('Error loading stored session:', e);
+    }
+    return null;
+  },
+
   logout: async () => {
     set({ user: null, token: null });
-    await SecureStore.deleteItemAsync(STORAGE_TOKEN_KEY);
-    await SecureStore.deleteItemAsync(STORAGE_USER_KEY);
-  },
-  
-  loadStoredAuth: async () => {
-    try {
-      const [storedToken, storedUser] = await Promise.all([
-        SecureStore.getItemAsync(STORAGE_TOKEN_KEY),
-        SecureStore.getItemAsync(STORAGE_USER_KEY),
-      ]);
-      
-      if (storedToken && storedUser) {
-        set({
-          token: storedToken,
-          user: JSON.parse(storedUser),
-        });
-      }
-    } catch (error) {
-      console.error('Error loading stored auth:', error);
-    }
+    await Promise.all([
+      SecureStore.deleteItemAsync(KEY_TOKEN),
+      SecureStore.deleteItemAsync(KEY_REFRESH),
+      SecureStore.deleteItemAsync(KEY_USER),
+    ]);
   },
 }));
