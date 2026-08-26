@@ -21,9 +21,7 @@
       "package": "com.tizonmeats.os"
     },
     "extra": {
-      "eas": {
-        "projectId": "tizon-os"
-      }
+      "eas": {}
     },
     "plugins": [
       "expo-status-bar",
