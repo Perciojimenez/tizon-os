@@ -89,7 +89,7 @@ export const CRMScreen = ({ navigation }: any) => {
           renderItem={renderCliente}
           ListEmptyComponent={
             <Text style={styles.empty}>
-              {busqueda.length > 0 ? 'Sin resultados' : 'Escribe para buscar un cliente'}
+              {busqueda.length > 0 ? 'Sin resultados para "' + busqueda + '"' : 'No hay clientes registrados'}
             </Text>
           }
         />
