@@ -97,8 +97,9 @@ export const NuevaReservaScreen = ({ navigation }: any) => {
       Alert.alert('✅ Reserva creada', `Código: ${reserva.codigo_unico}`, [
         { text: 'OK', onPress: () => navigation?.goBack() },
       ]);
-    } catch {
-      Alert.alert('Error', 'No se pudo crear la reserva. Intenta con otra mesa o fecha.');
+    } catch (err) {
+      const mensaje = err instanceof Error ? err.message : 'Error desconocido';
+      Alert.alert('No se pudo crear la reserva', mensaje);
     } finally {
       setGuardando(false);
     }

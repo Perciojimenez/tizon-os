@@ -61,6 +61,10 @@ export class TizonAPI {
   }
 
   async crearReserva(clienteId: string, mesaId: string, fecha: string, horaInicio: string, numComensales: number) {
+    const token = useAuthStore.getState().token;
+    if (!token) {
+      throw new Error('Sesión expirada. Cierra sesión y vuelve a entrar.');
+    }
     const res = await fetch(`${this.baseURL}/reservas`, {
       method: 'POST',
       headers: this.getHeaders(),
@@ -72,7 +76,17 @@ export class TizonAPI {
         numComensales,
       }),
     });
-    if (!res.ok) throw new Error('Error al crear reserva');
+    if (!res.ok) {
+      // Extraer el mensaje de error real del backend
+      let detalle = `Error ${res.status}`;
+      try {
+        const body = await res.json();
+        detalle = body.message || body.error || detalle;
+      } catch {
+        // respuesta sin JSON
+      }
+      throw new Error(detalle);
+    }
     return res.json();
   }
 
