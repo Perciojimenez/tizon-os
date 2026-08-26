@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
 import { tizonAPI } from '../services/api';
-import { useSalaStore, Reserva } from '../store/salaStore';
+import { useSalaStore } from '../store/salaStore';
+import { useAuthStore } from '../store/authStore';
 
 export const useReservas = (filtros?: any) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { reservas, setReservas } = useSalaStore();
+  const token = useAuthStore((s) => s.token);
+
+  // Serializamos los filtros para usarlos como dependencia estable
+  const filtrosKey = JSON.stringify(filtros || {});
 
   const cargarReservas = async () => {
+    if (!token) return;
     setLoading(true);
     try {
       const data = await tizonAPI.obtenerReservas(filtros);
@@ -20,9 +26,12 @@ export const useReservas = (filtros?: any) => {
     }
   };
 
+  // Recarga al montar, cuando el token esté listo, o cuando cambien los filtros (ej: fecha)
   useEffect(() => {
-    cargarReservas();
-  }, []);
+    if (token) {
+      cargarReservas();
+    }
+  }, [token, filtrosKey]);
 
   return { reservas, loading, error, refetch: cargarReservas };
 };

@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react';
 import { tizonAPI } from '../services/api';
 import { useSalaStore } from '../store/salaStore';
+import { useAuthStore } from '../store/authStore';
 
 export const useClientes = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { clientes, setClientes } = useSalaStore();
+  const token = useAuthStore((s) => s.token);
 
-  // Cargar todos los clientes al montar la pantalla
+  // Cargar todos los clientes al montar la pantalla y cuando el token esté listo
   useEffect(() => {
-    buscarTodos();
-  }, []);
+    if (token) {
+      buscarTodos();
+    }
+  }, [token]);
 
   const buscarTodos = async () => {
+    if (!token) return;
     setLoading(true);
     try {
       const data = await tizonAPI.buscarClientes(undefined);
