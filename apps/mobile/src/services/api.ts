@@ -1,17 +1,24 @@
 import { API_BASE_URL } from '../config/api';
+import { useAuthStore } from '../store/authStore';
 
 export class TizonAPI {
   private baseURL = API_BASE_URL;
-  private token: string | null = null;
 
-  setToken(token: string) {
-    this.token = token;
+  /**
+   * Mantenido por compatibilidad. El token real se lee siempre
+   * directamente del authStore (fuente única de verdad), de modo que
+   * cualquier request use el JWT vigente del usuario autenticado.
+   */
+  setToken(_token: string) {
+    // no-op: el token se obtiene del authStore en getHeaders()
   }
 
   private getHeaders() {
+    // Fuente única de verdad: el token guardado tras el login en Supabase.
+    const token = useAuthStore.getState().token;
     return {
       'Content-Type': 'application/json',
-      Authorization: this.token ? `Bearer ${this.token}` : '',
+      Authorization: token ? `Bearer ${token}` : '',
     };
   }
 
