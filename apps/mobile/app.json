@@ -2,6 +2,7 @@
   "expo": {
     "name": "Tizón OS",
     "slug": "tizon-os",
+    "owner": "perciojimenezs-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -21,7 +22,9 @@
       "package": "com.tizonmeats.os"
     },
     "extra": {
-      "eas": {}
+      "eas": {
+        "projectId": "cbff190e-fc06-4141-a34a-fb315c06fd4f"
+      }
     },
     "plugins": [
       "expo-status-bar",
