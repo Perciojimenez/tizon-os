@@ -8,18 +8,34 @@ import { useAuthStore } from './src/store/authStore';
 import { supabase } from './src/config/supabase';
 
 export default function App() {
-  const { actualizarMesa, setPacingEstado, setListaEspera } = useSalaStore();
-  const { loadStoredAuth, setToken, logout } = useAuthStore();
+  const { actualizarMesa, setPacingEstado } = useSalaStore();
+  const { setToken, setUser, logout } = useAuthStore();
 
   useEffect(() => {
-    // Cargar sesión almacenada al iniciar la app
-    loadStoredAuth();
-
-    // Escuchar cambios de autenticación de Supabase (renovación automática de token)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'TOKEN_REFRESHED' && session?.access_token) {
-        // Token renovado automáticamente — actualizar en el store
+    // Escuchar TODOS los eventos de autenticación de Supabase
+    // Esto maneja: sesión inicial al abrir app, renovación automática, y logout
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.access_token) {
+        // Actualizar token en el store con el token fresco de Supabase
         setToken(session.access_token);
+
+        // Si tenemos sesión, asegurar que el usuario esté cargado
+        if (session.user?.email) {
+          const { data: staffData } = await supabase
+            .from('staff')
+            .select('id, nombre, email, rol')
+            .eq('email', session.user.email)
+            .single();
+
+          if (staffData) {
+            setUser({
+              id: staffData.id,
+              email: staffData.email,
+              rol: staffData.rol,
+              nombre: staffData.nombre,
+            });
+          }
+        }
       } else if (event === 'SIGNED_OUT') {
         logout();
       }
@@ -27,22 +43,15 @@ export default function App() {
 
     // Conectar WebSocket y escuchar eventos en tiempo real
     socket.on('mesa-actualizada', (data) => {
-      console.log('🔄 WebSocket: Mesa actualizada', data);
       actualizarMesa(data.mesaId, { estado: data.estado });
     });
 
     socket.on('pacing-estado', (data) => {
-      console.log('🔄 WebSocket: Pacing estado actualizado', data);
       setPacingEstado({ estado: data.estado, personas: data.personas, capacidad: data.capacidad });
     });
 
-    socket.on('lista-espera-actualizada', (data) => {
-      console.log('🔄 WebSocket: Lista espera actualizada', data);
-    });
-
-    socket.on('reserva-confirmada', (data) => {
-      console.log('🔄 WebSocket: Reserva confirmada', data);
-    });
+    socket.on('lista-espera-actualizada', () => {});
+    socket.on('reserva-confirmada', () => {});
 
     return () => {
       subscription.unsubscribe();
