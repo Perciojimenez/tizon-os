@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Text, View } from 'react-native';
 import { OfflineBanner } from '../components/OfflineBanner';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 import { LoginScreen } from '../screens/LoginScreen';
 import { PlanoScreen } from '../screens/PlanoScreen';
@@ -63,6 +64,7 @@ function HomeTabs() {
         headerStyle: { backgroundColor: '#1a1a1a' },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
+        lazy: true,
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Dashboard' }} />
@@ -114,7 +116,11 @@ export const AppNavigator = () => {
           El banner ocupa espacio solo cuando hay algo que mostrar; en estado
           normal se oculta (devuelve null) y no afecta la vista. */}
       <View style={{ flex: 1 }}>
-        {user && <OfflineBanner />}
+        {user && (
+          <ErrorBoundary>
+            <OfflineBanner />
+          </ErrorBoundary>
+        )}
         <View style={{ flex: 1 }}>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             {!user ? (

@@ -9,6 +9,7 @@ import { useSalaStore } from './src/store/salaStore';
 import { useAuthStore } from './src/store/authStore';
 import { supabase } from './src/config/supabase';
 import { registrarPushNotifications } from './src/services/pushNotifications';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
 
 export default function App() {
   const { actualizarMesa, setPacingEstado } = useSalaStore();
@@ -97,9 +98,11 @@ export default function App() {
   useEffect(() => {
     if (user && !pushRegistrado.current) {
       pushRegistrado.current = true;
-      registrarPushNotifications().catch((e) =>
-        console.warn('No se pudo registrar push notifications:', e),
-      );
+      // Delay de 3 segundos para no interferir con el render inicial.
+      // Cualquier error se ignora por completo para no bloquear la app.
+      setTimeout(() => {
+        registrarPushNotifications().catch(() => {});
+      }, 3000);
     }
     if (!user) {
       pushRegistrado.current = false;
@@ -107,9 +110,9 @@ export default function App() {
   }, [user]);
 
   return (
-    <>
+    <ErrorBoundary>
       <StatusBar style="light" />
       <AppNavigator />
-    </>
+    </ErrorBoundary>
   );
 }
