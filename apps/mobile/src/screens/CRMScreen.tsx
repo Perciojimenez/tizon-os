@@ -36,30 +36,46 @@ export const CRMScreen = ({ navigation }: any) => {
     bien_cocido: '🥩 Bien cocido',
   };
 
+  const getIniciales = (nombre: string): string => {
+    const partes = nombre.trim().split(' ');
+    if (partes.length >= 2) return (partes[0][0] + partes[1][0]).toUpperCase();
+    return nombre.slice(0, 2).toUpperCase();
+  };
+
   const renderCliente = ({ item }: { item: Cliente }) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() => navigation?.navigate('ClienteDetalle', { clienteId: item.id })}
     >
-      <View style={styles.cardHeader}>
-        <Text style={styles.nombre}>{item.nombre}</Text>
-        <View style={styles.tags}>
-          {item.etiquetas?.includes('VIP') && <Text style={styles.tagVIP}>⭐ VIP</Text>}
-          {item.etiquetas?.includes('cumpleanos') && <Text style={styles.tagCump}>🎂</Text>}
+      <View style={styles.cardContent}>
+        {/* Avatar con iniciales */}
+        <View style={[styles.avatar, item.etiquetas?.includes('VIP') && styles.avatarVIP]}>
+          <Text style={styles.avatarText}>{getIniciales(item.nombre)}</Text>
         </View>
-      </View>
-      {item.telefono && <Text style={styles.info}>📱 {item.telefono}</Text>}
-      {item.termino_carne_preferido && (
-        <Text style={styles.info}>{TERMINACIONES[item.termino_carne_preferido] || item.termino_carne_preferido}</Text>
-      )}
-      {item.alergias && item.alergias.length > 0 && (
-        <Text style={styles.alergia}>⚠️ {item.alergias.join(', ')}</Text>
-      )}
-      <View style={styles.cardFooter}>
-        <Text style={styles.visitas}>{item.num_visitas ?? 0} visitas</Text>
-        {item.gasto_total && item.gasto_total > 0 && (
-          <Text style={styles.gasto}>${item.gasto_total?.toLocaleString()}</Text>
-        )}
+
+        {/* Info del cliente */}
+        <View style={styles.cardInfo}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.nombre}>{item.nombre}</Text>
+            <View style={styles.tags}>
+              {item.etiquetas?.includes('VIP') && <Text style={styles.tagVIP}>⭐</Text>}
+              {item.etiquetas?.includes('cumpleanos') && <Text style={styles.tagCump}>🎂</Text>}
+            </View>
+          </View>
+          {item.telefono && <Text style={styles.info}>📱 {item.telefono}</Text>}
+          {item.termino_carne_preferido && (
+            <Text style={styles.info}>{TERMINACIONES[item.termino_carne_preferido] || item.termino_carne_preferido}</Text>
+          )}
+          {item.alergias && item.alergias.length > 0 && (
+            <Text style={styles.alergia}>⚠️ {item.alergias.join(', ')}</Text>
+          )}
+          <View style={styles.cardFooter}>
+            <Text style={styles.visitas}>{item.num_visitas ?? 0} visitas</Text>
+            {item.gasto_total && item.gasto_total > 0 && (
+              <Text style={styles.gasto}>${item.gasto_total?.toLocaleString()}</Text>
+            )}
+          </View>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -124,13 +140,21 @@ const styles = StyleSheet.create({
   addBtn: { backgroundColor: '#4CAF50', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 6 },
   addBtnText: { color: '#fff', fontWeight: 'bold' },
   buscador: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 11, marginBottom: 12, fontSize: 14, backgroundColor: '#fafafa' },
-  card: { backgroundColor: '#f9f9f9', borderRadius: 8, padding: 14, marginBottom: 8 },
+  // Card mejorada con avatar
+  card: { backgroundColor: '#fff', borderRadius: 10, marginBottom: 10, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, borderWidth: 1, borderColor: '#f0f0f0' },
+  cardContent: { flexDirection: 'row', padding: 12 },
+  // Avatar circular con iniciales
+  avatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#2196F3', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  avatarVIP: { backgroundColor: '#FFC107', borderWidth: 2, borderColor: '#FFD54F' },
+  avatarText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  // Info del cliente
+  cardInfo: { flex: 1 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
-  nombre: { fontWeight: 'bold', fontSize: 15, color: '#333' },
-  tags: { flexDirection: 'row', gap: 6 },
-  tagVIP: { color: '#FFC107', fontSize: 13, fontWeight: '600' },
-  tagCump: { fontSize: 13 },
-  info: { fontSize: 13, color: '#555', marginBottom: 2 },
+  nombre: { fontWeight: 'bold', fontSize: 15, color: '#333', flex: 1 },
+  tags: { flexDirection: 'row', gap: 4 },
+  tagVIP: { fontSize: 16 },
+  tagCump: { fontSize: 16 },
+  info: { fontSize: 13, color: '#666', marginBottom: 3 },
   alergia: { fontSize: 12, color: '#F44336', marginTop: 2 },
   cardFooter: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
   visitas: { fontSize: 12, color: '#999' },
