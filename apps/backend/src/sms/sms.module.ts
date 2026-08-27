@@ -1,12 +1,13 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { SmsService } from './sms.service';
 import { SmsController } from './sms.controller';
+import { SmsScheduler } from './sms.scheduler';
 import { WebSocketModule } from '../websocket/websocket.module';
 
 @Module({
   imports: [forwardRef(() => WebSocketModule)],
   controllers: [SmsController],
-  providers: [SmsService],
+  providers: [SmsService, SmsScheduler],
   exports: [SmsService],
 })
 export class SmsModule {}

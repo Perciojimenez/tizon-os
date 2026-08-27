@@ -202,6 +202,33 @@ export class TizonAPI {
     if (!res.ok) throw new Error(`Error al obtener dashboard: ${res.status}`);
     return res.json();
   }
+
+  // ── WHATSAPP ───────────────────────────────────────────────────────────────
+  async getWhatsAppResumen() {
+    const res = await fetch(`${this.baseURL}/sms/resumen`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error(`Error al obtener historial: ${res.status}`);
+    return res.json();
+  }
+
+  async getWhatsAppStats() {
+    const res = await fetch(`${this.baseURL}/sms/stats`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error(`Error al obtener stats: ${res.status}`);
+    return res.json();
+  }
+
+  async enviarMensajeManual(clienteId: string, tipo: 'recordatorio' | 'agradecimiento', reservaId?: string) {
+    const res = await fetch(`${this.baseURL}/sms/enviar-manual`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ clienteId, tipo, reservaId }),
+    });
+    if (!res.ok) throw new Error('Error al enviar mensaje');
+    return res.json();
+  }
 }
 
 export const tizonAPI = new TizonAPI();
