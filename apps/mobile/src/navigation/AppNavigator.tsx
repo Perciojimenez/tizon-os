@@ -11,6 +11,7 @@ import { NuevaReservaScreen } from '../screens/NuevaReservaScreen';
 import { ListaEsperaScreen } from '../screens/ListaEsperaScreen';
 import { CRMScreen } from '../screens/CRMScreen';
 import { ClienteDetalleScreen } from '../screens/ClienteDetalleScreen';
+import { GerenciaScreen } from '../screens/GerenciaScreen';
 import { useAuthStore } from '../store/authStore';
 
 const Tab = createBottomTabNavigator();
@@ -21,6 +22,7 @@ const ICONS: { [key: string]: string } = {
   Reservas: '📅',
   Espera: '⏳',
   Clientes: '👥',
+  Gerencia: '📊',
 };
 
 function HomeTabs() {
@@ -39,6 +41,7 @@ function HomeTabs() {
       <Tab.Screen name="Reservas" component={ReservasStack} options={{ title: 'Reservas', headerShown: false }} />
       <Tab.Screen name="Espera" component={ListaEsperaScreen} options={{ title: 'Lista de Espera' }} />
       <Tab.Screen name="Clientes" component={CRMStack} options={{ title: 'Huéspedes', headerShown: false }} />
+      <Tab.Screen name="Gerencia" component={GerenciaScreen} options={{ title: 'Gerencia' }} />
     </Tab.Navigator>
   );
 }

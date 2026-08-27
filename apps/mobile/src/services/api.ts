@@ -193,6 +193,15 @@ export class TizonAPI {
     if (!res.ok) throw new Error('Error al actualizar espera');
     return res.json();
   }
+
+  // ── ANALYTICS ──────────────────────────────────────────────────────────────
+  async getDashboard() {
+    const res = await fetch(`${this.baseURL}/analytics/dashboard`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error(`Error al obtener dashboard: ${res.status}`);
+    return res.json();
+  }
 }
 
 export const tizonAPI = new TizonAPI();

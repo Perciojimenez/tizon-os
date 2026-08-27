@@ -10,6 +10,7 @@ import { ListaEsperaModule } from './lista-espera/lista-espera.module';
 import { PacingModule } from './pacing/pacing.module';
 import { SmsModule } from './sms/sms.module';
 import { WebSocketModule } from './websocket/websocket.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { WebSocketModule } from './websocket/websocket.module';
     PacingModule,
     SmsModule,
     WebSocketModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
 })
