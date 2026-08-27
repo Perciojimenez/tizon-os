@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Text } from 'react-native';
@@ -18,6 +18,23 @@ import { useAuthStore } from '../store/authStore';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+// Referencia global de navegación para poder navegar desde fuera de
+// componentes (p. ej. al tocar una notificación push).
+export const navigationRef = createNavigationContainerRef();
+
+/**
+ * Navega a una pestaña principal según el nombre recibido en la
+ * notificación push. Se usa desde los listeners en App.tsx.
+ */
+export function navegarADestino(pantalla?: string) {
+  if (!pantalla || !navigationRef.isReady()) return;
+  const pestanasValidas = ['Dashboard', 'Plano', 'Reservas', 'Espera', 'Clientes', 'Gerencia', 'WhatsApp'];
+  if (pestanasValidas.includes(pantalla)) {
+    // @ts-ignore - navegación dinámica por nombre
+    navigationRef.navigate('Home', { screen: pantalla });
+  }
+}
 
 const ICONS: { [key: string]: string } = {
   Dashboard: '📊',
@@ -82,7 +99,7 @@ export const AppNavigator = () => {
   const { user } = useAuthStore();
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!user ? (
           <Stack.Screen name="Login" component={LoginScreen} />

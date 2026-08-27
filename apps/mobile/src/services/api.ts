@@ -238,6 +238,26 @@ export class TizonAPI {
     if (!res.ok) throw new Error('Error al enviar mensaje');
     return res.json();
   }
+
+  // === NOTIFICACIONES PUSH ===
+  async registrarPushToken(token: string) {
+    const res = await fetch(`${this.baseURL}/push/token`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ token }),
+    });
+    if (!res.ok) throw new Error('Error registrando token');
+    return res.json();
+  }
+
+  async eliminarPushToken(token: string) {
+    const res = await fetch(`${this.baseURL}/push/token`, {
+      method: 'DELETE',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ token }),
+    });
+    return res.ok;
+  }
 }
 
 export const tizonAPI = new TizonAPI();

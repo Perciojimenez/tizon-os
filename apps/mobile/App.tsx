@@ -1,15 +1,19 @@
 import 'react-native-gesture-handler';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { AppNavigator } from './src/navigation/AppNavigator';
+import { Alert } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import { AppNavigator, navegarADestino } from './src/navigation/AppNavigator';
 import { socket } from './src/config/socket';
 import { useSalaStore } from './src/store/salaStore';
 import { useAuthStore } from './src/store/authStore';
 import { supabase } from './src/config/supabase';
+import { registrarPushNotifications } from './src/services/pushNotifications';
 
 export default function App() {
   const { actualizarMesa, setPacingEstado } = useSalaStore();
-  const { setToken, setUser, saveSession, loadStoredSession, logout } = useAuthStore();
+  const { setToken, setUser, saveSession, loadStoredSession, logout, user } = useAuthStore();
+  const pushRegistrado = useRef(false);
 
   useEffect(() => {
     // 1. Restaurar sesión guardada en SecureStore y pasarla a Supabase
@@ -65,14 +69,42 @@ export default function App() {
     socket.on('lista-espera-actualizada', () => {});
     socket.on('reserva-confirmada', () => {});
 
+    // 4. Listeners de notificaciones push
+    //    a) Notificación recibida con la app en primer plano → mostrar alerta
+    const recibidaSub = Notifications.addNotificationReceivedListener((notification) => {
+      const { title, body } = notification.request.content;
+      Alert.alert(title || 'Tizón OS', body || '');
+    });
+
+    //    b) El usuario toca la notificación → navegar a la pantalla indicada
+    const respuestaSub = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data as { pantalla?: string };
+      navegarADestino(data?.pantalla);
+    });
+
     return () => {
       subscription.unsubscribe();
       socket.off('mesa-actualizada');
       socket.off('pacing-estado');
       socket.off('lista-espera-actualizada');
       socket.off('reserva-confirmada');
+      recibidaSub.remove();
+      respuestaSub.remove();
     };
   }, []);
+
+  // Registrar notificaciones push una vez que el usuario está autenticado
+  useEffect(() => {
+    if (user && !pushRegistrado.current) {
+      pushRegistrado.current = true;
+      registrarPushNotifications().catch((e) =>
+        console.warn('No se pudo registrar push notifications:', e),
+      );
+    }
+    if (!user) {
+      pushRegistrado.current = false;
+    }
+  }, [user]);
 
   return (
     <>

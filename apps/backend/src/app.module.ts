@@ -12,6 +12,7 @@ import { SmsModule } from './sms/sms.module';
 import { WebSocketModule } from './websocket/websocket.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { PushModule } from './push/push.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     WebSocketModule,
     AnalyticsModule,
     DashboardModule,
+    PushModule,
   ],
   controllers: [AppController],
 })

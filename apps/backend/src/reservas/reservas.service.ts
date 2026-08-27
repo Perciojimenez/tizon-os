@@ -3,6 +3,7 @@ import { supabaseAdmin } from '../config/supabase.config';
 import { CodigoUnicoService } from './codigo-unico.service';
 import { SmsService } from '../sms/sms.service';
 import { SalaGateway } from '../websocket/websocket.gateway';
+import { PushService } from '../push/push.service';
 
 @Injectable()
 export class ReservasService {
@@ -10,6 +11,7 @@ export class ReservasService {
     private codigoService: CodigoUnicoService,
     private smsService: SmsService,
     @Inject(forwardRef(() => SalaGateway)) private salaGateway: SalaGateway,
+    private pushService: PushService,
   ) {}
 
   async crearReserva(clienteId: string, mesaId: string, fecha: string, horaInicio: string, numComensales: number, creadoPor: string, notasServicio?: string) {
@@ -61,6 +63,18 @@ export class ReservasService {
           'whatsapp', // Usar WhatsApp por defecto
         );
         console.log(`📱 WhatsApp de confirmación enviado a ${cliente.nombre} (${cliente.telefono})`);
+      }
+
+      // Notificación Push al staff sobre la nueva reserva
+      try {
+        await this.pushService.notificarNuevaReserva(
+          codigoUnico,
+          cliente?.nombre || 'Cliente',
+          horaInicio?.slice(0, 5) || horaInicio,
+        );
+      } catch (pushError) {
+        console.error('⚠️ Error al enviar notificación push:', pushError);
+        // No bloquear la creación de la reserva si falla el push
       }
     } catch (smsError) {
       console.error('⚠️ Error al enviar WhatsApp de confirmación:', smsError);
