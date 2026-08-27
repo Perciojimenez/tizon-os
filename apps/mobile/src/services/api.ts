@@ -203,6 +203,15 @@ export class TizonAPI {
     return res.json();
   }
 
+  // ── DASHBOARD GERENCIA (KPIs) ────────────────────────────────────────────────
+  async obtenerDashboardKpis() {
+    const res = await fetch(`${this.baseURL}/dashboard/kpis`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error(`Error al obtener KPIs: ${res.status}`);
+    return res.json();
+  }
+
   // ── WHATSAPP ───────────────────────────────────────────────────────────────
   async getWhatsAppResumen() {
     const res = await fetch(`${this.baseURL}/sms/resumen`, {

@@ -11,6 +11,7 @@ import { NuevaReservaScreen } from '../screens/NuevaReservaScreen';
 import { ListaEsperaScreen } from '../screens/ListaEsperaScreen';
 import { CRMScreen } from '../screens/CRMScreen';
 import { ClienteDetalleScreen } from '../screens/ClienteDetalleScreen';
+import { DashboardScreen } from '../screens/DashboardScreen';
 import { GerenciaScreen } from '../screens/GerenciaScreen';
 import { WhatsAppScreen } from '../screens/WhatsAppScreen';
 import { useAuthStore } from '../store/authStore';
@@ -19,11 +20,12 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const ICONS: { [key: string]: string } = {
+  Dashboard: '📊',
   Plano: '🗺',
   Reservas: '📅',
   Espera: '⏳',
   Clientes: '👥',
-  Gerencia: '📊',
+  Gerencia: '📈',
   WhatsApp: '💬',
 };
 
@@ -39,6 +41,7 @@ function HomeTabs() {
         headerTitleStyle: { fontWeight: 'bold' },
       })}
     >
+      <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Dashboard' }} />
       <Tab.Screen name="Plano" component={PlanoScreen} options={{ title: 'Plano de Sala' }} />
       <Tab.Screen name="Reservas" component={ReservasStack} options={{ title: 'Reservas', headerShown: false }} />
       <Tab.Screen name="Espera" component={ListaEsperaScreen} options={{ title: 'Lista de Espera' }} />

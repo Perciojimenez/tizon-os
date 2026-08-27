@@ -11,6 +11,7 @@ import { PacingModule } from './pacing/pacing.module';
 import { SmsModule } from './sms/sms.module';
 import { WebSocketModule } from './websocket/websocket.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     SmsModule,
     WebSocketModule,
     AnalyticsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
 })
