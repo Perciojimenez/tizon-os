@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityInd
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../config/supabase';
 
-export const LoginScreen = ({ navigation }: any) => {
+export const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,7 +52,8 @@ export const LoginScreen = ({ navigation }: any) => {
         nombre: staffData.nombre,
       });
 
-      navigation?.replace('Home');
+      // La navegación a Home la maneja automáticamente AppNavigator
+      // al detectar el cambio de estado en authStore (user != null).
     } catch (err) {
       Alert.alert('Error de login', err instanceof Error ? err.message : 'Error desconocido');
     } finally {
