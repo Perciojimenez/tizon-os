@@ -239,6 +239,101 @@ export class TizonAPI {
     return res.json();
   }
 
+  // === PEDIDOS & COMANDAS (Hito #7) ===
+  /** Carta del restaurante (opcionalmente filtrada por categoría). */
+  async obtenerMenu(categoria?: string) {
+    const query = categoria ? `?categoria=${encodeURIComponent(categoria)}` : '';
+    const res = await fetch(`${this.baseURL}/pedidos/menu${query}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error('Error al obtener el menú');
+    return res.json();
+  }
+
+  /** Pedido activo de una mesa (null si no hay ninguno abierto). */
+  async obtenerPedidoMesa(numero: number) {
+    const res = await fetch(`${this.baseURL}/pedidos/mesa/${numero}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error('Error al obtener el pedido de la mesa');
+    return res.json();
+  }
+
+  /** Todos los pedidos activos (vista de cocina). */
+  async obtenerPedidosActivos() {
+    const res = await fetch(`${this.baseURL}/pedidos`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error('Error al obtener pedidos');
+    return res.json();
+  }
+
+  /** Crea (o recupera) el pedido activo de una mesa. */
+  async crearPedido(mesaNumero: number, meseroNombre?: string) {
+    const res = await fetch(`${this.baseURL}/pedidos`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ mesa_numero: mesaNumero, mesero_nombre: meseroNombre }),
+    });
+    if (!res.ok) throw new Error('Error al crear el pedido');
+    return res.json();
+  }
+
+  /** Agrega items al pedido. items: [{ menu_item_id, cantidad, notas? }]. */
+  async agregarComandas(
+    pedidoId: string,
+    items: { menu_item_id: string; cantidad: number; notas?: string }[],
+  ) {
+    const res = await fetch(`${this.baseURL}/pedidos/${pedidoId}/comandas`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ items }),
+    });
+    if (!res.ok) throw new Error('Error al agregar items al pedido');
+    return res.json();
+  }
+
+  /** Actualiza el estado global del pedido (abierto/en_cocina/listo/cerrado). */
+  async actualizarEstadoPedido(pedidoId: string, estado: string) {
+    const res = await fetch(`${this.baseURL}/pedidos/${pedidoId}/estado`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ estado }),
+    });
+    if (!res.ok) throw new Error('Error al actualizar el pedido');
+    return res.json();
+  }
+
+  /** Actualiza el estado de una comanda individual (usado por cocina). */
+  async actualizarEstadoComanda(comandaId: string, estado: string) {
+    const res = await fetch(`${this.baseURL}/pedidos/comandas/${comandaId}/estado`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ estado }),
+    });
+    if (!res.ok) throw new Error('Error al actualizar la comanda');
+    return res.json();
+  }
+
+  /** Cierra el pedido y devuelve la cuenta final. */
+  async cerrarPedido(pedidoId: string) {
+    const res = await fetch(`${this.baseURL}/pedidos/${pedidoId}/cerrar`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error('Error al cerrar el pedido');
+    return res.json();
+  }
+
+  /** Obtiene la cuenta detallada de un pedido (subtotal, impuesto, total). */
+  async obtenerCuenta(pedidoId: string) {
+    const res = await fetch(`${this.baseURL}/pedidos/${pedidoId}/cuenta`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) throw new Error('Error al obtener la cuenta');
+    return res.json();
+  }
+
   // === NOTIFICACIONES PUSH ===
   async registrarPushToken(token: string) {
     const res = await fetch(`${this.baseURL}/push/token`, {

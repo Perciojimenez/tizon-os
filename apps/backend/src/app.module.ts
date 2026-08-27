@@ -13,6 +13,7 @@ import { WebSocketModule } from './websocket/websocket.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { PushModule } from './push/push.module';
+import { PedidosModule } from './pedidos/pedidos.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PushModule } from './push/push.module';
     AnalyticsModule,
     DashboardModule,
     PushModule,
+    PedidosModule,
   ],
   controllers: [AppController],
 })

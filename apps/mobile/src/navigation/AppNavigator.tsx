@@ -15,6 +15,9 @@ import { ClienteDetalleScreen } from '../screens/ClienteDetalleScreen';
 import { DashboardScreen } from '../screens/DashboardScreen';
 import { GerenciaScreen } from '../screens/GerenciaScreen';
 import { WhatsAppScreen } from '../screens/WhatsAppScreen';
+import { PedidosScreen } from '../screens/PedidosScreen';
+import { CocinaScreen } from '../screens/CocinaScreen';
+import { CuentaScreen } from '../screens/CuentaScreen';
 import { useAuthStore } from '../store/authStore';
 
 const Tab = createBottomTabNavigator();
@@ -30,7 +33,7 @@ export const navigationRef = createNavigationContainerRef();
  */
 export function navegarADestino(pantalla?: string) {
   if (!pantalla || !navigationRef.isReady()) return;
-  const pestanasValidas = ['Dashboard', 'Plano', 'Reservas', 'Espera', 'Clientes', 'Gerencia', 'WhatsApp'];
+  const pestanasValidas = ['Dashboard', 'Plano', 'Pedidos', 'Cocina', 'Cuenta', 'Reservas', 'Espera', 'Clientes', 'Gerencia', 'WhatsApp'];
   if (pestanasValidas.includes(pantalla)) {
     // @ts-ignore - navegación dinámica por nombre
     navigationRef.navigate('Home', { screen: pantalla });
@@ -40,6 +43,9 @@ export function navegarADestino(pantalla?: string) {
 const ICONS: { [key: string]: string } = {
   Dashboard: '📊',
   Plano: '🗺',
+  Pedidos: '🍽️',
+  Cocina: '👨‍🍳',
+  Cuenta: '🧾',
   Reservas: '📅',
   Espera: '⏳',
   Clientes: '👥',
@@ -61,6 +67,9 @@ function HomeTabs() {
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Dashboard' }} />
       <Tab.Screen name="Plano" component={PlanoScreen} options={{ title: 'Plano de Sala' }} />
+      <Tab.Screen name="Pedidos" component={PedidosScreen} options={{ title: 'Pedidos' }} />
+      <Tab.Screen name="Cocina" component={CocinaScreen} options={{ title: 'Cocina' }} />
+      <Tab.Screen name="Cuenta" component={CuentaScreen} options={{ title: 'Cuenta' }} />
       <Tab.Screen name="Reservas" component={ReservasStack} options={{ title: 'Reservas', headerShown: false }} />
       <Tab.Screen name="Espera" component={ListaEsperaScreen} options={{ title: 'Lista de Espera' }} />
       <Tab.Screen name="Clientes" component={CRMStack} options={{ title: 'Huéspedes', headerShown: false }} />
