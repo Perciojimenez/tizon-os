@@ -2,7 +2,8 @@ import React from 'react';
 import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
+import { OfflineBanner } from '../components/OfflineBanner';
 
 import { LoginScreen } from '../screens/LoginScreen';
 import { PlanoScreen } from '../screens/PlanoScreen';
@@ -100,13 +101,21 @@ export const AppNavigator = () => {
 
   return (
     <NavigationContainer ref={navigationRef}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!user ? (
-          <Stack.Screen name="Login" component={LoginScreen} />
-        ) : (
-          <Stack.Screen name="Home" component={HomeTabs} />
-        )}
-      </Stack.Navigator>
+      {/* Contenedor que apila el aviso offline (si aplica) sobre toda la app.
+          El banner ocupa espacio solo cuando hay algo que mostrar; en estado
+          normal se oculta (devuelve null) y no afecta la vista. */}
+      <View style={{ flex: 1 }}>
+        {user && <OfflineBanner />}
+        <View style={{ flex: 1 }}>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {!user ? (
+              <Stack.Screen name="Login" component={LoginScreen} />
+            ) : (
+              <Stack.Screen name="Home" component={HomeTabs} />
+            )}
+          </Stack.Navigator>
+        </View>
+      </View>
     </NavigationContainer>
   );
 };
