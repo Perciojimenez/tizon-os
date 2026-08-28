@@ -10,6 +10,7 @@ import { useAuthStore } from './src/store/authStore';
 import { supabase } from './src/config/supabase';
 import { registrarPushNotifications } from './src/services/pushNotifications';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
   const { actualizarMesa, setPacingEstado } = useSalaStore();
@@ -110,9 +111,11 @@ export default function App() {
   }, [user]);
 
   return (
-    <ErrorBoundary>
-      <StatusBar style="light" />
-      <AppNavigator />
-    </ErrorBoundary>
+    <SafeAreaProvider>
+      <ErrorBoundary>
+        <StatusBar style="light" />
+        <AppNavigator />
+      </ErrorBoundary>
+    </SafeAreaProvider>
   );
 }
