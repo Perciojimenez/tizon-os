@@ -3,6 +3,7 @@ import { NavigationContainer, createNavigationContainerRef } from '@react-naviga
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Text, View, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OfflineBanner } from '../components/OfflineBanner';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 
@@ -162,6 +163,7 @@ const TAB_ICONS: { [key: string]: string } = {
 
 function HomeTabs() {
   const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const esTablet = width > 600;
   const iconSize = esTablet ? 22 : 18;
   const labelSize = esTablet ? 12 : 10;
@@ -172,7 +174,13 @@ function HomeTabs() {
       screenOptions={({ route }) => ({
         tabBarIcon: () => <Text style={{ fontSize: iconSize }}>{TAB_ICONS[route.name] || '•'}</Text>,
         tabBarLabelStyle: { fontSize: labelSize },
-        tabBarStyle: { height: barHeight, paddingBottom: esTablet ? 10 : 6, paddingTop: 4 },
+        tabBarStyle: {
+          backgroundColor: '#1a1a1a',
+          borderTopColor: '#333',
+          height: barHeight + insets.bottom,
+          paddingBottom: insets.bottom + (esTablet ? 8 : 4),
+          paddingTop: esTablet ? 8 : 4,
+        },
         tabBarActiveTintColor: '#2196F3',
         tabBarInactiveTintColor: '#999',
         headerShown: false,
