@@ -29,14 +29,46 @@ export class SmsService {
   }
 
   /**
+   * Convierte un teléfono a formato E.164 (+1XXXXXXXXXX).
+   *
+   * Twilio SIEMPRE requiere E.164. Si el número llega como "809-521-7466",
+   * "8295217466" o "(829) 521 7466", Twilio lo RECHAZA y el mensaje nunca
+   * se entrega. Esta función lo normaliza:
+   *   - Si ya viene con '+', se respeta (solo se limpian espacios/guiones).
+   *   - 10 dígitos (RD 809/829/849, EE.UU./Canadá) => se antepone +1.
+   *   - 11 dígitos que empiezan con 1 => se antepone +.
+   *   - Cualquier otro caso con dígitos => se antepone + tal cual.
+   */
+  private normalizarE164(telefono: string): string {
+    if (!telefono) return telefono;
+    const limpio = telefono.replace(/^whatsapp:/i, '').trim();
+
+    // Ya está en E.164: solo quitar espacios/guiones internos.
+    if (limpio.startsWith('+')) {
+      return '+' + limpio.slice(1).replace(/\D/g, '');
+    }
+
+    // Solo dígitos.
+    const digitos = limpio.replace(/\D/g, '');
+    if (digitos.length === 10) {
+      // Número local de RD/EE.UU./Canadá (NANP): anteponer +1.
+      return `+1${digitos}`;
+    }
+    if (digitos.length === 11 && digitos.startsWith('1')) {
+      return `+${digitos}`;
+    }
+    // Fallback: anteponer + a los dígitos existentes.
+    return `+${digitos}`;
+  }
+
+  /**
    * Normaliza un número al formato que Twilio requiere según el canal.
    * - SMS:      +14247244485
    * - WhatsApp: whatsapp:+14247244485
    */
   private formatearDireccion(telefono: string, canal: CanalMensaje): string {
-    // Quitar cualquier prefijo previo para evitar duplicados
-    const limpio = telefono.replace(/^whatsapp:/i, '').trim();
-    return canal === 'whatsapp' ? `whatsapp:${limpio}` : limpio;
+    const e164 = this.normalizarE164(telefono);
+    return canal === 'whatsapp' ? `whatsapp:${e164}` : e164;
   }
 
   /**
@@ -62,28 +94,56 @@ export class SmsService {
       throw new Error(`No hay número configurado para el canal '${canal}'`);
     }
 
+    const to = this.formatearDireccion(telefono, canal);
+
     try {
       const result = await this.twilioClient.messages.create({
         body: mensaje,
         from,
-        to: this.formatearDireccion(telefono, canal),
+        to,
       });
+      // status suele ser 'queued'/'sent'. OJO: en el Sandbox de WhatsApp el
+      // mensaje se acepta (queued) aunque el destinatario NO haya enviado
+      // "join <palabra>": Twilio lo encola pero nunca lo entrega.
+      console.log(`📤 Twilio aceptó mensaje ${result.sid} (${canal}) → ${to} | status=${result.status}`);
       return { sid: result.sid, canal };
-    } catch (error) {
-      console.error(`Error al enviar por ${canal}:`, error);
+    } catch (error: any) {
+      // Log detallado del error real de Twilio para poder diagnosticar.
+      console.error(
+        `❌ Error al enviar por ${canal} → ${to}: ` +
+          `code=${error?.code} status=${error?.status} msg=${error?.message} moreInfo=${error?.moreInfo}`,
+      );
 
       // Fallback automático: si falla WhatsApp, intentar SMS
       if (canal === 'whatsapp' && this.twilioPhone) {
         console.warn('↩️ Fallback a SMS...');
-        const result = await this.twilioClient.messages.create({
-          body: mensaje,
-          from: this.twilioPhone,
-          to: this.formatearDireccion(telefono, 'sms'),
-        });
-        return { sid: result.sid, canal: 'sms' };
+        const smsTo = this.formatearDireccion(telefono, 'sms');
+        try {
+          const result = await this.twilioClient.messages.create({
+            body: mensaje,
+            from: this.twilioPhone,
+            to: smsTo,
+          });
+          console.log(`📤 Twilio aceptó SMS (fallback) ${result.sid} → ${smsTo} | status=${result.status}`);
+          return { sid: result.sid, canal: 'sms' };
+        } catch (smsError: any) {
+          console.error(
+            `❌ Fallback SMS también falló → ${smsTo}: ` +
+              `code=${smsError?.code} msg=${smsError?.message}`,
+          );
+          throw smsError;
+        }
       }
       throw error;
     }
+  }
+
+  /** Devuelve un texto corto y útil para diagnosticar un error de Twilio. */
+  private detalleError(error: any): string {
+    if (!error) return 'error desconocido';
+    const code = error.code ? `code:${error.code}` : '';
+    const msg = error.message || String(error);
+    return `${code} ${msg}`.trim().slice(0, 250);
   }
 
   /**
@@ -119,7 +179,8 @@ export class SmsService {
       const { canal: canalUsado } = await this.enviarMensaje(telefono, mensaje, canal ?? this.canalDefault);
       return this.registrarSms(clienteId, telefono, 'confirmacion', mensaje, 'enviado', `canal:${canalUsado}`);
     } catch (error) {
-      return this.registrarSms(clienteId, telefono, 'confirmacion', mensaje, 'fallido');
+      console.error('❌ Falló confirmación:', this.detalleError(error));
+      return this.registrarSms(clienteId, telefono, 'confirmacion', mensaje, 'fallido', this.detalleError(error));
     }
   }
 
@@ -130,7 +191,8 @@ export class SmsService {
       const { canal: canalUsado } = await this.enviarMensaje(telefono, mensaje, canal ?? this.canalDefault);
       return this.registrarSms(clienteId, telefono, 'recordatorio', mensaje, 'enviado', `canal:${canalUsado}`);
     } catch (error) {
-      return this.registrarSms(clienteId, telefono, 'recordatorio', mensaje, 'fallido');
+      console.error('❌ Falló recordatorio:', this.detalleError(error));
+      return this.registrarSms(clienteId, telefono, 'recordatorio', mensaje, 'fallido', this.detalleError(error));
     }
   }
 
@@ -141,7 +203,8 @@ export class SmsService {
       const { canal: canalUsado } = await this.enviarMensaje(telefono, mensaje, canal ?? this.canalDefault);
       return this.registrarSms(null, telefono, 'lista_espera', mensaje, 'enviado', `canal:${canalUsado}`);
     } catch (error) {
-      return this.registrarSms(null, telefono, 'lista_espera', mensaje, 'fallido');
+      console.error('❌ Falló lista_espera:', this.detalleError(error));
+      return this.registrarSms(null, telefono, 'lista_espera', mensaje, 'fallido', this.detalleError(error));
     }
   }
 
@@ -152,7 +215,8 @@ export class SmsService {
       const { canal: canalUsado } = await this.enviarMensaje(telefono, mensaje, canal ?? this.canalDefault);
       return this.registrarSms(clienteId, telefono, 'agradecimiento', mensaje, 'enviado', `canal:${canalUsado}`);
     } catch (error) {
-      return this.registrarSms(clienteId, telefono, 'agradecimiento', mensaje, 'fallido');
+      console.error('❌ Falló agradecimiento:', this.detalleError(error));
+      return this.registrarSms(clienteId, telefono, 'agradecimiento', mensaje, 'fallido', this.detalleError(error));
     }
   }
 
