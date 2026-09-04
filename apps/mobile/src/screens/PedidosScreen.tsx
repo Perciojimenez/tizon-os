@@ -4,6 +4,16 @@ import {
   ActivityIndicator, Alert,
 } from 'react-native';
 import { tizonAPI } from '../services/api';
+import { MesaCard } from '../components/MesaCard';
+import { useMesas } from '../hooks/useMesas';
+import { Mesa } from '../store/salaStore';
+
+// Zonas para agrupar las mesas en la selección
+const ZONAS_PEDIDOS: { key: Mesa['zona']; label: string }[] = [
+  { key: 'salon_principal', label: 'Salón Principal' },
+  { key: 'terraza', label: 'Terraza' },
+  { key: 'privado', label: 'Privado' },
+];
 
 // Paleta oscuro/dorado de Tizón OS
 const BG = '#1a0a00';
@@ -48,6 +58,7 @@ const CATEGORIAS: { key: string; label: string }[] = [
 const MESAS = Array.from({ length: 20 }, (_, i) => i + 1);
 
 export const PedidosScreen = () => {
+  const { mesas } = useMesas();
   const [mesaSel, setMesaSel] = useState<number | null>(null);
   const [pedido, setPedido] = useState<Pedido | null>(null);
   const [menu, setMenu] = useState<MenuItem[]>([]);
@@ -152,14 +163,37 @@ export const PedidosScreen = () => {
       <View style={styles.container}>
         <Text style={styles.titulo}>Selecciona una mesa</Text>
         <Text style={styles.subtitulo}>Toca la mesa para tomar el pedido</Text>
-        <ScrollView contentContainerStyle={styles.gridMesas}>
-          {MESAS.map((n) => (
-            <TouchableOpacity key={n} style={styles.mesaBtn} onPress={() => abrirMesa(n)}>
-              <Text style={styles.mesaNum}>{n}</Text>
-              <Text style={styles.mesaLbl}>Mesa</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+
+        {mesas.length > 0 ? (
+          <ScrollView contentContainerStyle={{ padding: 12, paddingBottom: 24 }}>
+            {ZONAS_PEDIDOS.map((z) => {
+              const mesasZona = mesas
+                .filter((m) => m.zona === z.key)
+                .sort((a, b) => a.numero - b.numero);
+              if (mesasZona.length === 0) return null;
+              return (
+                <View key={z.key} style={styles.zonaBloque}>
+                  <Text style={styles.zonaTitulo}>{z.label}</Text>
+                  <View style={styles.zonaGrid}>
+                    {mesasZona.map((m) => (
+                      <MesaCard key={m.id} mesa={m} onPress={(mm) => abrirMesa(mm.numero)} />
+                    ))}
+                  </View>
+                </View>
+              );
+            })}
+          </ScrollView>
+        ) : (
+          // Fallback: si aún no hay datos de mesas, mostrar la cuadrícula numérica.
+          <ScrollView contentContainerStyle={styles.gridMesas}>
+            {MESAS.map((n) => (
+              <TouchableOpacity key={n} style={styles.mesaBtn} onPress={() => abrirMesa(n)}>
+                <Text style={styles.mesaNum}>{n}</Text>
+                <Text style={styles.mesaLbl}>Mesa</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
         {error && <Text style={styles.error}>{error}</Text>}
       </View>
     );
@@ -287,6 +321,9 @@ const styles = StyleSheet.create({
   titulo: { color: GOLD, fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginTop: 16 },
   subtitulo: { color: MUTED, fontSize: 13, textAlign: 'center', marginBottom: 12 },
   gridMesas: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', padding: 10 },
+  zonaBloque: { marginBottom: 20 },
+  zonaTitulo: { color: GOLD, fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginBottom: 14 },
+  zonaGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   mesaBtn: {
     width: 72, height: 72, margin: 8, borderRadius: 12, backgroundColor: CARD,
     borderWidth: 1, borderColor: GOLD, alignItems: 'center', justifyContent: 'center',
